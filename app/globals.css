@@ -16,7 +16,12 @@ body {
   margin: 0;
   font-family: "Montserrat", system-ui, -apple-system, sans-serif;
   color: #202532;
-  background: #efefef;
+  background-color: #efefef;
+  background-image:
+    linear-gradient(90deg, #2f6fa0 0, #2f6fa0 110px, transparent 110px, transparent calc(100% - 110px), #2f6fa0 calc(100% - 110px), #2f6fa0 100%),
+    repeating-linear-gradient(180deg, rgba(36, 96, 143, 0.95) 0 38px, rgba(84, 160, 219, 0.95) 38px 76px, rgba(31, 74, 113, 0.95) 76px 114px, rgba(92, 167, 223, 0.95) 114px 152px);
+  background-size: 100% 100%, 110px 152px;
+  background-position: center, left top;
 }
 
 a {
@@ -272,6 +277,10 @@ a:hover {
 }
 
 @media (max-width: 760px) {
+  body {
+    background: #efefef;
+  }
+
   .pc-nav-main {
     grid-template-columns: 1fr;
     padding: 14px 0;

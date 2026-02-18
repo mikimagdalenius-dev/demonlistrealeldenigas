@@ -51,13 +51,13 @@ export default async function DemonlistPage() {
 
               <div>
                 <div className="pc-demon-title">
-                  #{demon.position}  {demon.name}
+                  #{demon.position} — {demon.name}
                 </div>
                 <div className="pc-demon-meta">
                   published by <strong>{demon.publisherName}</strong>
                 </div>
                 <div className="pc-demon-points">
-                  Difficulty {demon.difficulty}/10  <a href={demon.videoUrl}>video proof</a>
+                  Difficulty {demon.difficulty}/10 — <a href={demon.videoUrl}>video proof</a>
                 </div>
               </div>
             </div>

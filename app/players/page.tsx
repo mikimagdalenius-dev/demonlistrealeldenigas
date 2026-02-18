@@ -48,7 +48,7 @@ export default async function PlayersPage() {
             <div className="pc-demon-row" style={{ gridTemplateColumns: "1fr" }}>
               <div>
                 <div className="pc-demon-title">
-                  #{index + 1}  {player.name}
+                  #{index + 1} — {player.name}
                 </div>
                 <div className="pc-demon-meta">
                   completed demons: <strong>{player.completedDemons}</strong>
