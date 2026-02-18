@@ -15,8 +15,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        <main className="pc-shell">{children}</main>
+        <div className="pc-side pc-side-left" aria-hidden="true" />
+        <div className="pc-side pc-side-right" aria-hidden="true" />
+        <div className="pc-page">
+          <Navbar />
+          <main className="pc-shell">{children}</main>
+        </div>
       </body>
     </html>
   );
