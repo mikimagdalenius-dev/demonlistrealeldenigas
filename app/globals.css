@@ -36,7 +36,7 @@ a:hover {
 
 .pc-topbar {
   background: #ffffff;
-  border-bottom: 1px solid #d9d9d9;
+  border-bottom: 1px dashed #d9d9d9;
 }
 
 .pc-nav-wrap {
@@ -64,7 +64,7 @@ a:hover {
 .pc-tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  border: 1px solid #dfdfdf;
+  border: 1px dashed #dfdfdf;
   border-bottom: 0;
   background: #fff;
 }
@@ -74,14 +74,14 @@ a:hover {
   font-weight: 700;
   font-size: clamp(20px, 1.5vw, 30px);
   padding: 12px;
-  border-bottom: 1px solid #dfdfdf;
+  border-bottom: 1px dashed #dfdfdf;
   color: #2f3440;
   text-decoration: none !important;
   transition: background-color 0.2s ease;
 }
 
 .pc-tab + .pc-tab {
-  border-left: 1px solid #e4e4e4;
+  border-left: 1px dashed #e4e4e4;
 }
 
 .pc-tab:hover,
@@ -120,7 +120,7 @@ a:hover {
   height: 106px;
   object-fit: cover;
   object-position: center;
-  border: 1px solid #cbcbcb;
+  border: 1px dashed #cbcbcb;
   background: #e6e6e6;
 }
 
@@ -147,7 +147,7 @@ a:hover {
 
 .pc-video-btn {
   display: inline-block;
-  border: 1px solid #2f6ea1;
+  border: 1px dashed #2f6ea1;
   background: #3f82bc;
   color: #fff !important;
   text-decoration: none !important;
@@ -182,7 +182,7 @@ a:hover {
 .pc-runs-list {
   margin: 8px 0 0;
   padding: 10px 12px;
-  border: 1px solid #cfd3d9;
+  border: 1px dashed #cfd3d9;
   background: #fff;
   min-width: 280px;
   display: grid;
@@ -223,7 +223,7 @@ a:hover {
 }
 
 .pc-submit-tab {
-  border: 1px solid #cfd3d9;
+  border: 1px dashed #cfd3d9;
   background: #ffffff;
   color: #2f3440;
   font-size: 15px;
@@ -255,7 +255,7 @@ a:hover {
 .pc-form input,
 .pc-select {
   width: 100%;
-  border: 1px solid #cfd3d9;
+  border: 1px dashed #cfd3d9;
   background: #fff;
   padding: 10px 12px;
   font-family: inherit;
@@ -270,7 +270,7 @@ a:hover {
 }
 
 .pc-btn {
-  border: 1px solid #2f6ea1;
+  border: 1px dashed #2f6ea1;
   background: #3f82bc;
   color: #fff;
   font-weight: 700;
@@ -305,13 +305,13 @@ a:hover {
 .pc-toast-ok {
   background: #e5f7e8;
   color: #1e6a2e;
-  border: 1px solid #a8deb2;
+  border: 1px dashed #a8deb2;
 }
 
 .pc-toast-error {
   background: #fdecec;
   color: #8f1f1f;
-  border: 1px solid #efb3b3;
+  border: 1px dashed #efb3b3;
 }
 
 .pc-top5 {
@@ -452,6 +452,6 @@ a:hover {
 
   .pc-tab + .pc-tab {
     border-left: 0;
-    border-top: 1px solid #e4e4e4;
+    border-top: 1px dashed #e4e4e4;
   }
 }
