@@ -194,6 +194,32 @@ a:hover {
   padding: 18px;
 }
 
+.pc-submit-tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pc-submit-tab {
+  border: 1px solid #cfd3d9;
+  background: #ffffff;
+  color: #2f3440;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 9px 14px;
+  cursor: pointer;
+}
+
+.pc-submit-tab:hover {
+  background: #f3f5f7;
+}
+
+.pc-submit-tab.is-active {
+  border-color: #2f6ea1;
+  background: #3f82bc;
+  color: #ffffff;
+}
+
 .pc-form label {
   display: block;
   font-size: 12px;
