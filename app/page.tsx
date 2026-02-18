@@ -7,18 +7,18 @@ function thumbnailFromVideo(url: string): string {
     const parsed = new URL(url);
     if (parsed.hostname.includes("youtu.be")) {
       const id = parsed.pathname.split("/").filter(Boolean)[0];
-      if (id) return `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+      if (id) return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
     }
 
     if (parsed.hostname.includes("youtube.com")) {
       const id = parsed.searchParams.get("v");
-      if (id) return `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+      if (id) return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
     }
   } catch {
     // ignore
   }
 
-  return "https://dummyimage.com/460x212/e5e7eb/6b7280&text=No+Thumbnail";
+  return "https://dummyimage.com/320x180/e5e7eb/6b7280&text=No+Thumbnail";
 }
 
 export default async function DemonlistPage() {
@@ -47,7 +47,9 @@ export default async function DemonlistPage() {
                 published by <strong>{demon.publisherName}</strong>
               </div>
               <div className="pc-demon-points">
-                Difficulty {demon.difficulty}/10 — <a href={demon.videoUrl}>video proof</a>
+                <a className="pc-video-btn" href={demon.videoUrl} target="_blank" rel="noreferrer">
+                  Video proof
+                </a>
               </div>
             </div>
           </div>

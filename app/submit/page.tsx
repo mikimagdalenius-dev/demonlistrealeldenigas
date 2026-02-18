@@ -20,8 +20,8 @@ export default function SubmitPage() {
         </div>
 
         <div className="mb-5">
-          <label htmlFor="difficulty">Difficulty (1-10)</label>
-          <input id="difficulty" name="difficulty" type="number" min={1} max={10} required />
+          <label htmlFor="provisionalPosition">Provisional position</label>
+          <input id="provisionalPosition" name="provisionalPosition" type="number" min={1} required />
         </div>
 
         <button type="submit" className="pc-btn">

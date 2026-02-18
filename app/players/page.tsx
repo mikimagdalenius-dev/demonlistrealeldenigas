@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 type PlayerWithCompletions = {
   id: number;
   name: string;
-  completions: { demon: { position: number; difficulty: number } }[];
+  completions: { demon: { position: number } }[];
 };
 
 export default async function PlayersPage() {
@@ -17,7 +17,11 @@ export default async function PlayersPage() {
       include: {
         completions: {
           include: {
-            demon: true
+            demon: {
+              select: {
+                position: true
+              }
+            }
           }
         }
       }
@@ -30,12 +34,12 @@ export default async function PlayersPage() {
     .map((player) => {
       const completedDemons = player.completions.length;
       const points = player.completions.reduce((sum, completion) => {
-        return sum + pointsFromDemon(completion.demon.position, completion.demon.difficulty);
+        return sum + pointsFromDemon(completion.demon.position);
       }, 0);
 
       return { id: player.id, name: player.name, completedDemons, points };
     })
-    .sort((a, b) => b.points - a.points);
+    .sort((a, b) => b.points - a.points || b.completedDemons - a.completedDemons);
 
   return (
     <section className="pc-list-only">
