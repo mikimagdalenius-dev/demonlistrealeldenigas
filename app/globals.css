@@ -204,7 +204,8 @@ a:hover {
   margin-bottom: 6px;
 }
 
-.pc-form input {
+.pc-form input,
+.pc-select {
   width: 100%;
   border: 1px solid #cfd3d9;
   background: #fff;
@@ -213,7 +214,8 @@ a:hover {
   font-size: 14px;
 }
 
-.pc-form input:focus {
+.pc-form input:focus,
+.pc-select:focus {
   outline: none;
   border-color: #5f85aa;
   box-shadow: 0 0 0 3px rgba(95, 133, 170, 0.15);
@@ -231,6 +233,37 @@ a:hover {
 
 .pc-btn:hover {
   background: #3173ac;
+}
+
+.pc-btn-secondary {
+  margin-right: 10px;
+  border-color: #b4bcc6;
+  background: #eef1f4;
+  color: #303b4a;
+}
+
+.pc-btn-secondary:hover {
+  background: #e3e8ee;
+}
+
+.pc-toast {
+  margin-top: 12px;
+  display: inline-block;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pc-toast-ok {
+  background: #e5f7e8;
+  color: #1e6a2e;
+  border: 1px solid #a8deb2;
+}
+
+.pc-toast-error {
+  background: #fdecec;
+  color: #8f1f1f;
+  border: 1px solid #efb3b3;
 }
 
 @media (max-width: 1100px) {

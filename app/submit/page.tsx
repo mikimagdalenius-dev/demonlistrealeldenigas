@@ -1,33 +1,28 @@
-import { submitDemon } from "./actions";
+import { prisma } from "@/lib/prisma";
+import { SubmitForm } from "./submit-form";
 
-export default function SubmitPage() {
+export const dynamic = "force-dynamic";
+
+const defaultPlayers = ["Miki", "Isma", "Luksan", "Robert", "Adri", "Meri"];
+
+export default async function SubmitPage() {
+  let dbPlayers: string[] = [];
+
+  try {
+    const players = await prisma.player.findMany({
+      select: { name: true },
+      orderBy: { name: "asc" }
+    });
+    dbPlayers = players.map((player) => player.name);
+  } catch {
+    dbPlayers = [];
+  }
+
+  const players = Array.from(new Set([...defaultPlayers, ...dbPlayers]));
+
   return (
     <section className="pc-list-only">
-      <form action={submitDemon} className="pc-form">
-        <div className="mb-4">
-          <label htmlFor="name">Demon name</label>
-          <input id="name" name="name" required />
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="videoUrl">Video link</label>
-          <input id="videoUrl" name="videoUrl" type="url" required />
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="publisherName">Publisher / Verifier</label>
-          <input id="publisherName" name="publisherName" required />
-        </div>
-
-        <div className="mb-5">
-          <label htmlFor="provisionalPosition">Provisional position</label>
-          <input id="provisionalPosition" name="provisionalPosition" type="number" min={1} required />
-        </div>
-
-        <button type="submit" className="pc-btn">
-          Submit
-        </button>
-      </form>
+      <SubmitForm players={players} />
     </section>
   );
 }
