@@ -8,15 +8,16 @@ datasource db {
 }
 
 model Demon {
-  id                 Int          @id @default(autoincrement())
-  position           Int          @unique
-  name               String
-  videoUrl           String
-  publisherName      String
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
-  submissions        Submission[]
-  completions        Completion[]
+  id            Int          @id @default(autoincrement())
+  position      Int          @unique
+  name          String
+  videoUrl      String
+  publisherName String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  submissions   Submission[]
+  completions   Completion[]
+  progresses    Progress[]
 }
 
 model Player {
@@ -25,6 +26,7 @@ model Player {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   completions Completion[]
+  progresses  Progress[]
 }
 
 model Completion {
@@ -34,6 +36,19 @@ model Completion {
   createdAt DateTime @default(now())
   player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
   demon     Demon    @relation(fields: [demonId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, demonId])
+}
+
+model Progress {
+  id         Int      @id @default(autoincrement())
+  playerId   Int
+  demonId    Int
+  percentage Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  player     Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  demon      Demon    @relation(fields: [demonId], references: [id], onDelete: Cascade)
 
   @@unique([playerId, demonId])
 }

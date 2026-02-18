@@ -16,11 +16,23 @@ function toPositiveInt(value: FormDataEntryValue | null, fieldName: string): num
   return parsed;
 }
 
+function toPercentInt(value: FormDataEntryValue | null): number {
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1 || parsed > 100) {
+    throw new Error("Percentage must be between 1 and 100");
+  }
+  return parsed;
+}
+
 function normalizeUrl(raw: string): string {
   const value = raw.trim();
   if (!value) return value;
   if (/^https?:\/\//i.test(value)) return value;
   return `https://${value}`;
+}
+
+function resolvePlayerName(selectedPlayer: string, newPlayerName: string): string {
+  return selectedPlayer === "__new__" ? newPlayerName.trim() : selectedPlayer.trim();
 }
 
 export async function submitDemon(_prev: SubmitState, formData: FormData): Promise<SubmitState> {
@@ -34,7 +46,7 @@ export async function submitDemon(_prev: SubmitState, formData: FormData): Promi
       "Provisional position"
     );
 
-    const publisherName = selectedPlayer === "__new__" ? newPlayerName : selectedPlayer;
+    const publisherName = resolvePlayerName(selectedPlayer, newPlayerName);
 
     if (!name || !videoUrl || !publisherName) {
       return { ok: false, message: "Please complete all required fields." };
@@ -101,5 +113,56 @@ export async function submitDemon(_prev: SubmitState, formData: FormData): Promi
     return { ok: true, message: "Demon submitted correctly." };
   } catch {
     return { ok: false, message: "Something went wrong while submitting. Try again." };
+  }
+}
+
+export async function submitProgress(_prev: SubmitState, formData: FormData): Promise<SubmitState> {
+  try {
+    const demonId = Number(formData.get("existingDemonId"));
+    const selectedPlayer = String(formData.get("playerName") ?? "").trim();
+    const newPlayerName = String(formData.get("newPlayerName") ?? "").trim();
+    const percentage = toPercentInt(formData.get("percentage"));
+
+    if (!Number.isInteger(demonId) || demonId < 1) {
+      return { ok: false, message: "Please select an existing demon." };
+    }
+
+    const playerName = resolvePlayerName(selectedPlayer, newPlayerName);
+    if (!playerName) {
+      return { ok: false, message: "Please select or create a player." };
+    }
+
+    await prisma.$transaction(async (tx) => {
+      const demon = await tx.demon.findUnique({ where: { id: demonId }, select: { id: true } });
+      if (!demon) throw new Error("Demon not found");
+
+      const player = await tx.player.upsert({
+        where: { name: playerName },
+        update: {},
+        create: { name: playerName }
+      });
+
+      await tx.progress.upsert({
+        where: {
+          playerId_demonId: {
+            playerId: player.id,
+            demonId: demonId
+          }
+        },
+        update: { percentage },
+        create: {
+          playerId: player.id,
+          demonId: demonId,
+          percentage
+        }
+      });
+    });
+
+    revalidatePath("/players");
+    revalidatePath("/submit");
+
+    return { ok: true, message: "Progress submitted correctly." };
+  } catch {
+    return { ok: false, message: "Could not submit progress." };
   }
 }
