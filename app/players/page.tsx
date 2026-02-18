@@ -32,31 +32,35 @@ export default async function PlayersPage() {
 
   return (
     <section className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Players</h1>
-        <p className="mt-2 text-zinc-400">Completion stats and calculated points.</p>
+      <div className="pc-panel p-6">
+        <h1 className="pc-title">Players</h1>
+        <p className="pc-subtitle mt-2">Leaderboard based on completions and demon points.</p>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-zinc-800">
-        <table className="min-w-full divide-y divide-zinc-800 text-sm">
-          <thead className="bg-zinc-900">
+      <div className="pc-panel overflow-x-auto">
+        <table className="pc-table min-w-full divide-y divide-zinc-800 text-sm">
+          <thead>
             <tr>
-              <th className="px-4 py-3 text-left">Player</th>
-              <th className="px-4 py-3 text-left">Completed Demons</th>
-              <th className="px-4 py-3 text-left">Points</th>
+              <th>Rank</th>
+              <th>Player</th>
+              <th>Completed Demons</th>
+              <th>Points</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-800">
-            {rows.map((player) => (
-              <tr key={player.id} className="bg-zinc-950">
-                <td className="px-4 py-3">{player.name}</td>
-                <td className="px-4 py-3">{player.completedDemons}</td>
-                <td className="px-4 py-3 font-semibold">{player.points}</td>
+          <tbody className="divide-y divide-zinc-800 bg-[#101010]">
+            {rows.map((player, index) => (
+              <tr key={player.id} className="transition hover:bg-[#171717]">
+                <td>
+                  <span className="pc-rank">{index + 1}</span>
+                </td>
+                <td className="font-semibold text-zinc-100">{player.name}</td>
+                <td className="text-zinc-300">{player.completedDemons}</td>
+                <td className="font-bold text-red-300">{player.points}</td>
               </tr>
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={3} className="px-4 py-6 text-center text-zinc-400">
+                <td colSpan={4} className="px-4 py-10 text-center text-zinc-400">
                   No players yet.
                 </td>
               </tr>

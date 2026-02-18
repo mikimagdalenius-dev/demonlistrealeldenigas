@@ -7,9 +7,34 @@
 }
 
 body {
-  @apply bg-zinc-950 text-zinc-100;
+  @apply min-h-screen bg-[#090909] text-zinc-100;
+  background-image: radial-gradient(circle at top, rgba(220, 38, 38, 0.14), transparent 35%);
 }
 
 a {
-  @apply text-blue-400 hover:text-blue-300;
+  @apply text-red-400 hover:text-red-300;
+}
+
+.pc-panel {
+  @apply rounded-md border border-zinc-800 bg-[#111111];
+}
+
+.pc-title {
+  @apply text-3xl font-black uppercase tracking-wide text-zinc-100;
+}
+
+.pc-subtitle {
+  @apply text-sm text-zinc-400;
+}
+
+.pc-table th {
+  @apply bg-[#191919] px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-400;
+}
+
+.pc-table td {
+  @apply px-4 py-3;
+}
+
+.pc-rank {
+  @apply inline-flex min-w-8 items-center justify-center rounded bg-red-600/20 px-2 py-0.5 font-bold text-red-300;
 }
