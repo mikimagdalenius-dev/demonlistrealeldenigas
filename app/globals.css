@@ -20,27 +20,6 @@ body {
   overflow-x: hidden;
 }
 
-.pc-side {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  width: 135px;
-  z-index: 0;
-  background-repeat: repeat-y;
-  background-size: 135px auto;
-  pointer-events: none;
-}
-
-.pc-side-left {
-  left: 0;
-  background-image: url("/side-left.svg");
-}
-
-.pc-side-right {
-  right: 0;
-  background-image: url("/side-right.svg");
-}
-
 .pc-page {
   position: relative;
   z-index: 1;
@@ -98,6 +77,7 @@ a:hover {
   border-bottom: 1px solid #dfdfdf;
   color: #2f3440;
   text-decoration: none !important;
+  transition: background-color 0.2s ease;
 }
 
 .pc-tab + .pc-tab {
@@ -124,6 +104,7 @@ a:hover {
 .pc-card {
   background: #f8f8f8;
   border: 1px dashed #d4d4d4;
+  animation: fadeInUp 0.28s ease;
 }
 
 .pc-demon-row {
@@ -175,10 +156,15 @@ a:hover {
   text-transform: uppercase;
   letter-spacing: 0.4px;
   padding: 8px 12px;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
 .pc-video-btn:hover {
   background: #3173ac;
+}
+
+.pc-video-btn:active {
+  transform: translateY(1px);
 }
 
 .pc-runs {
@@ -227,6 +213,7 @@ a:hover {
   background: #f8f8f8;
   border: 1px dashed #d4d4d4;
   padding: 18px;
+  animation: fadeInUp 0.28s ease;
 }
 
 .pc-submit-tabs {
@@ -376,16 +363,79 @@ a:hover {
   font-size: 13px;
 }
 
-@media (max-width: 1100px) {
-  .pc-side {
-    display: none;
-  }
+.pc-skeleton {
+  border: 1px dashed #d4d4d4;
+  background: #f8f8f8;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 188px 1fr;
+  gap: 16px;
+}
 
-  .pc-demon-row {
+.pc-skeleton-thumb,
+.pc-skeleton-line {
+  position: relative;
+  overflow: hidden;
+  background: #e8ecf1;
+}
+
+.pc-skeleton-thumb {
+  width: 188px;
+  height: 106px;
+}
+
+.pc-skeleton-line {
+  height: 14px;
+  margin-bottom: 10px;
+}
+
+.pc-skeleton-line.w-80 {
+  width: 80%;
+}
+
+.pc-skeleton-line.w-60 {
+  width: 60%;
+}
+
+.pc-skeleton-line.w-40 {
+  width: 40%;
+}
+
+.pc-skeleton-thumb::after,
+.pc-skeleton-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1100px) {
+  .pc-demon-row,
+  .pc-skeleton {
     grid-template-columns: 1fr;
   }
 
-  .pc-thumb {
+  .pc-thumb,
+  .pc-skeleton-thumb {
     width: 100%;
     height: 180px;
   }

@@ -65,8 +65,9 @@ export default async function DemonlistPage() {
   return (
     <section className="pc-list-only">
       {demons.map((demon) => {
-        const runs = demon.completions.length
-          ? demon.completions
+        const completionRuns = demon.completions.filter((run) => run.videoUrl.trim().length > 0);
+        const runs = completionRuns.length
+          ? completionRuns
           : [{ id: -1, videoUrl: demon.videoUrl, player: { name: demon.publisherName } }];
 
         return (

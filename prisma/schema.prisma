@@ -33,7 +33,7 @@ model Completion {
   id        Int      @id @default(autoincrement())
   playerId  Int
   demonId   Int
-  videoUrl  String
+  videoUrl  String   @default("")
   createdAt DateTime @default(now())
   player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
   demon     Demon    @relation(fields: [demonId], references: [id], onDelete: Cascade)
