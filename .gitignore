@@ -11,3 +11,4 @@ pnpm-debug.log*
 .DS_Store
 *.db
 prisma/prisma/
+.vercel
