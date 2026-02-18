@@ -266,6 +266,37 @@ a:hover {
   border: 1px solid #efb3b3;
 }
 
+.pc-top5 {
+  margin-top: 14px;
+}
+
+.pc-top5-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #4b5563;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.pc-top5-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+}
+
+.pc-top5-item {
+  color: #2f3440;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.pc-top5-empty {
+  color: #6b7280;
+  font-size: 13px;
+}
+
 @media (max-width: 1100px) {
   .pc-side {
     display: none;

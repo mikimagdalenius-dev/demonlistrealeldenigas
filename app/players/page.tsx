@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 type PlayerWithCompletions = {
   id: number;
   name: string;
-  completions: { demon: { position: number } }[];
+  completions: { demon: { name: string; position: number } }[];
 };
 
 export default async function PlayersPage() {
@@ -19,6 +19,7 @@ export default async function PlayersPage() {
           include: {
             demon: {
               select: {
+                name: true,
                 position: true
               }
             }
@@ -37,7 +38,12 @@ export default async function PlayersPage() {
         return sum + pointsFromDemon(completion.demon.position);
       }, 0);
 
-      return { id: player.id, name: player.name, completedDemons, points };
+      const hardestTop5 = [...player.completions]
+        .sort((a, b) => a.demon.position - b.demon.position)
+        .slice(0, 5)
+        .map((completion) => completion.demon);
+
+      return { id: player.id, name: player.name, completedDemons, points, hardestTop5 };
     })
     .sort((a, b) => b.points - a.points || b.completedDemons - a.completedDemons);
 
@@ -54,6 +60,21 @@ export default async function PlayersPage() {
                 completed demons: <strong>{player.completedDemons}</strong>
               </div>
               <div className="pc-demon-points">total points: {player.points}</div>
+
+              <div className="pc-top5">
+                <div className="pc-top5-title">Top 5 hardest demons</div>
+                {player.hardestTop5.length > 0 ? (
+                  <ul className="pc-top5-list">
+                    {player.hardestTop5.map((demon) => (
+                      <li key={`${player.id}-${demon.position}-${demon.name}`} className="pc-top5-item">
+                        #{demon.position} — {demon.name}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="pc-top5-empty">No completions yet.</div>
+                )}
+              </div>
             </div>
           </div>
         </article>
