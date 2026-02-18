@@ -2,22 +2,33 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-function thumbnailFromVideo(url: string): string {
-  try {
-    const parsed = new URL(url);
-    if (parsed.hostname.includes("youtu.be")) {
-      const id = parsed.pathname.split("/").filter(Boolean)[0];
-      if (id) return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
-    }
+function extractYouTubeId(url: string): string | null {
+  const cleaned = url.trim();
 
-    if (parsed.hostname.includes("youtube.com")) {
-      const id = parsed.searchParams.get("v");
-      if (id) return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
-    }
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+    /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/
+  ];
+
+  for (const pattern of patterns) {
+    const match = cleaned.match(pattern);
+    if (match?.[1]) return match[1];
+  }
+
+  try {
+    const parsed = new URL(cleaned);
+    const v = parsed.searchParams.get("v");
+    if (v && /^[a-zA-Z0-9_-]{11}$/.test(v)) return v;
   } catch {
     // ignore
   }
 
+  return null;
+}
+
+function thumbnailFromVideo(url: string): string {
+  const id = extractYouTubeId(url);
+  if (id) return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
   return "https://dummyimage.com/320x180/e5e7eb/6b7280&text=No+Thumbnail";
 }
 

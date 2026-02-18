@@ -16,10 +16,17 @@ function toPositiveInt(value: FormDataEntryValue | null, fieldName: string): num
   return parsed;
 }
 
+function normalizeUrl(raw: string): string {
+  const value = raw.trim();
+  if (!value) return value;
+  if (/^https?:\/\//i.test(value)) return value;
+  return `https://${value}`;
+}
+
 export async function submitDemon(_prev: SubmitState, formData: FormData): Promise<SubmitState> {
   try {
     const name = String(formData.get("name") ?? "").trim();
-    const videoUrl = String(formData.get("videoUrl") ?? "").trim();
+    const videoUrl = normalizeUrl(String(formData.get("videoUrl") ?? ""));
     const selectedPlayer = String(formData.get("playerName") ?? "").trim();
     const newPlayerName = String(formData.get("newPlayerName") ?? "").trim();
     const provisionalPosition = toPositiveInt(
