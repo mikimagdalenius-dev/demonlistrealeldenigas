@@ -11,7 +11,6 @@ type PlayerWithCompletions = {
 
 export default async function PlayersPage() {
   let players: PlayerWithCompletions[] = [];
-  let dbOffline = false;
 
   try {
     players = await prisma.player.findMany({
@@ -24,7 +23,7 @@ export default async function PlayersPage() {
       }
     });
   } catch {
-    dbOffline = true;
+    players = [];
   }
 
   const rows = players
@@ -39,37 +38,24 @@ export default async function PlayersPage() {
     .sort((a, b) => b.points - a.points);
 
   return (
-    <section className="pc-grid">
-      <div className="pc-stack">
-        {dbOffline && <div className="pc-card pc-empty">Database is not connected yet.</div>}
-
-        {rows.map((player, index) => (
-          <article key={player.id} className="pc-card">
-            <div className="pc-demon-row" style={{ gridTemplateColumns: "1fr" }}>
-              <div>
-                <div className="pc-demon-title">
-                  #{index + 1} — {player.name}
-                </div>
-                <div className="pc-demon-meta">
-                  completed demons: <strong>{player.completedDemons}</strong>
-                </div>
-                <div className="pc-demon-points">total points: {player.points}</div>
+    <section className="pc-list-only">
+      {rows.map((player, index) => (
+        <article key={player.id} className="pc-card">
+          <div className="pc-demon-row" style={{ gridTemplateColumns: "1fr" }}>
+            <div>
+              <div className="pc-demon-title">
+                #{index + 1} — {player.name}
               </div>
+              <div className="pc-demon-meta">
+                completed demons: <strong>{player.completedDemons}</strong>
+              </div>
+              <div className="pc-demon-points">total points: {player.points}</div>
             </div>
-          </article>
-        ))}
+          </div>
+        </article>
+      ))}
 
-        {rows.length === 0 && <div className="pc-card pc-empty">No players yet.</div>}
-      </div>
-
-      <aside className="pc-stack">
-        <section className="pc-side-block">
-          <h2 className="pc-side-title">Players</h2>
-          <p className="pc-side-text">
-            Ranking is based on completed demons and weighted points from list position + difficulty.
-          </p>
-        </section>
-      </aside>
+      {rows.length === 0 && <div className="pc-card pc-empty">No players yet.</div>}
     </section>
   );
 }

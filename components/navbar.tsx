@@ -1,34 +1,34 @@
-import Link from "next/link";
+"use client";
 
-const links = [
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const tabs = [
   { href: "/", label: "Main List" },
-  { href: "/submit", label: "Submit Record" },
+  { href: "/submit", label: "Submit" },
   { href: "/players", label: "Players" }
 ];
 
 export function Navbar() {
+  const pathname = usePathname();
+
   return (
     <header className="pc-topbar">
       <div className="pc-nav-wrap">
         <div className="pc-nav-main">
-          <div className="pc-logo">
-            POINTERCRATE<span className="pc-logo-dot">.COM</span>
-          </div>
+          <div className="pc-logo">DEMONLIST ELDENIGAS</div>
+        </div>
 
-          <nav className="pc-nav-links">
-            {links.map((link) => (
-              <Link key={link.href} href={link.href} className="pc-nav-link">
-                {link.label}
+        <nav className="pc-tabs" aria-label="main navigation">
+          {tabs.map((tab) => {
+            const active = pathname === tab.href;
+            return (
+              <Link key={tab.href} href={tab.href} className={`pc-tab ${active ? "is-active" : ""}`}>
+                {tab.label}
               </Link>
-            ))}
-          </nav>
-        </div>
-
-        <div className="pc-tabs" role="tablist" aria-label="list sections">
-          <div className="pc-tab">Main List</div>
-          <div className="pc-tab">Extended List</div>
-          <div className="pc-tab">Legacy List</div>
-        </div>
+            );
+          })}
+        </nav>
       </div>
     </header>
   );
