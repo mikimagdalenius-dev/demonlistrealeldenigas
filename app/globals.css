@@ -181,6 +181,41 @@ a:hover {
   background: #3173ac;
 }
 
+.pc-runs {
+  display: inline-block;
+}
+
+.pc-runs > summary {
+  list-style: none;
+}
+
+.pc-runs > summary::-webkit-details-marker {
+  display: none;
+}
+
+.pc-runs-list {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border: 1px solid #cfd3d9;
+  background: #fff;
+  min-width: 280px;
+  display: grid;
+  gap: 6px;
+}
+
+.pc-runs-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.pc-runs-player {
+  font-weight: 600;
+  color: #2f3440;
+}
+
 .pc-empty {
   padding: 24px 16px;
   text-align: center;

@@ -88,10 +88,11 @@ export async function submitDemon(_prev: SubmitState, formData: FormData): Promi
             demonId: created.id
           }
         },
-        update: {},
+        update: { videoUrl },
         create: {
           playerId: player.id,
-          demonId: created.id
+          demonId: created.id,
+          videoUrl
         }
       });
 
@@ -113,6 +114,58 @@ export async function submitDemon(_prev: SubmitState, formData: FormData): Promi
     return { ok: true, message: "Demon submitted correctly." };
   } catch {
     return { ok: false, message: "Something went wrong while submitting. Try again." };
+  }
+}
+
+export async function submitCompletion(_prev: SubmitState, formData: FormData): Promise<SubmitState> {
+  try {
+    const demonId = Number(formData.get("existingDemonId"));
+    const selectedPlayer = String(formData.get("playerName") ?? "").trim();
+    const newPlayerName = String(formData.get("newPlayerName") ?? "").trim();
+    const videoUrl = normalizeUrl(String(formData.get("videoUrl") ?? ""));
+
+    if (!Number.isInteger(demonId) || demonId < 1) {
+      return { ok: false, message: "Please select an existing demon." };
+    }
+
+    const playerName = resolvePlayerName(selectedPlayer, newPlayerName);
+    if (!playerName || !videoUrl) {
+      return { ok: false, message: "Please complete all required fields." };
+    }
+
+    await prisma.$transaction(async (tx) => {
+      const demon = await tx.demon.findUnique({ where: { id: demonId }, select: { id: true } });
+      if (!demon) throw new Error("Demon not found");
+
+      const player = await tx.player.upsert({
+        where: { name: playerName },
+        update: {},
+        create: { name: playerName }
+      });
+
+      await tx.completion.upsert({
+        where: {
+          playerId_demonId: {
+            playerId: player.id,
+            demonId
+          }
+        },
+        update: { videoUrl },
+        create: {
+          playerId: player.id,
+          demonId,
+          videoUrl
+        }
+      });
+    });
+
+    revalidatePath("/");
+    revalidatePath("/players");
+    revalidatePath("/submit");
+
+    return { ok: true, message: "Completion submitted correctly." };
+  } catch {
+    return { ok: false, message: "Could not submit completion." };
   }
 }
 

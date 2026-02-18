@@ -33,11 +33,30 @@ function thumbnailFromVideo(url: string): string {
 }
 
 export default async function DemonlistPage() {
-  let demons: Awaited<ReturnType<typeof prisma.demon.findMany>> = [];
+  let demons: {
+    id: number;
+    position: number;
+    name: string;
+    videoUrl: string;
+    publisherName: string;
+    completions: { id: number; videoUrl: string; player: { name: string } }[];
+  }[] = [];
 
   try {
     demons = await prisma.demon.findMany({
-      orderBy: { position: "asc" }
+      orderBy: { position: "asc" },
+      include: {
+        completions: {
+          include: {
+            player: {
+              select: { name: true }
+            }
+          },
+          orderBy: {
+            createdAt: "asc"
+          }
+        }
+      }
     });
   } catch {
     demons = [];
@@ -45,27 +64,43 @@ export default async function DemonlistPage() {
 
   return (
     <section className="pc-list-only">
-      {demons.map((demon) => (
-        <article key={demon.id} className="pc-card">
-          <div className="pc-demon-row">
-            <img className="pc-thumb" src={thumbnailFromVideo(demon.videoUrl)} alt={demon.name} />
+      {demons.map((demon) => {
+        const runs = demon.completions.length
+          ? demon.completions
+          : [{ id: -1, videoUrl: demon.videoUrl, player: { name: demon.publisherName } }];
 
-            <div>
-              <div className="pc-demon-title">
-                #{demon.position} — {demon.name}
-              </div>
-              <div className="pc-demon-meta">
-                published by <strong>{demon.publisherName}</strong>
-              </div>
-              <div className="pc-demon-points">
-                <a className="pc-video-btn" href={demon.videoUrl} target="_blank" rel="noreferrer">
-                  Video proof
-                </a>
+        return (
+          <article key={demon.id} className="pc-card">
+            <div className="pc-demon-row">
+              <img className="pc-thumb" src={thumbnailFromVideo(runs[0].videoUrl)} alt={demon.name} />
+
+              <div>
+                <div className="pc-demon-title">
+                  #{demon.position} — {demon.name}
+                </div>
+                <div className="pc-demon-meta">
+                  published by <strong>{demon.publisherName}</strong>
+                </div>
+                <div className="pc-demon-points">
+                  <details className="pc-runs">
+                    <summary className="pc-video-btn">Video proofs ({runs.length})</summary>
+                    <ul className="pc-runs-list">
+                      {runs.map((run, index) => (
+                        <li key={`${demon.id}-${run.id}-${index}`} className="pc-runs-item">
+                          <span className="pc-runs-player">{run.player.name}</span>
+                          <a href={run.videoUrl} target="_blank" rel="noreferrer">
+                            Watch
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                </div>
               </div>
             </div>
-          </div>
-        </article>
-      ))}
+          </article>
+        );
+      })}
 
       {demons.length === 0 && <div className="pc-card pc-empty">No demons yet. Add one in Submit.</div>}
     </section>

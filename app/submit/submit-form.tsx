@@ -2,7 +2,7 @@
 
 import { useActionState, useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { submitDemon, submitProgress } from "./actions";
+import { submitCompletion, submitDemon, submitProgress } from "./actions";
 
 type SubmitFormProps = {
   players: string[];
@@ -91,11 +91,12 @@ function PlayerFields({
 }
 
 export function SubmitForm({ players, demons }: SubmitFormProps) {
-  const [tab, setTab] = useState<"new" | "progress">("new");
+  const [tab, setTab] = useState<"new" | "completion" | "progress">("new");
   const [addingNew, setAddingNew] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState(players[0] ?? "Miki");
 
   const [newState, newAction] = useActionState(submitDemon, initialSubmitState);
+  const [completionState, completionAction] = useActionState(submitCompletion, initialSubmitState);
   const [progressState, progressAction] = useActionState(submitProgress, initialSubmitState);
 
   return (
@@ -110,6 +111,13 @@ export function SubmitForm({ players, demons }: SubmitFormProps) {
         </button>
         <button
           type="button"
+          className={`pc-submit-tab ${tab === "completion" ? "is-active" : ""}`}
+          onClick={() => setTab("completion")}
+        >
+          Existing demon completion
+        </button>
+        <button
+          type="button"
           className={`pc-submit-tab ${tab === "progress" ? "is-active" : ""}`}
           onClick={() => setTab("progress")}
         >
@@ -117,7 +125,7 @@ export function SubmitForm({ players, demons }: SubmitFormProps) {
         </button>
       </div>
 
-      {tab === "new" ? (
+      {tab === "new" && (
         <form action={newAction}>
           <div className="mb-4">
             <label htmlFor="name">Demon name</label>
@@ -143,14 +151,49 @@ export function SubmitForm({ players, demons }: SubmitFormProps) {
           </div>
 
           <SubmitButton label="Submit demon" />
-
           {newState.message && (
-            <p className={`pc-toast ${newState.ok ? "pc-toast-ok" : "pc-toast-error"}`}>
-              {newState.message}
+            <p className={`pc-toast ${newState.ok ? "pc-toast-ok" : "pc-toast-error"}`}>{newState.message}</p>
+          )}
+        </form>
+      )}
+
+      {tab === "completion" && (
+        <form action={completionAction}>
+          <div className="mb-4">
+            <label htmlFor="existingDemonId">Select existing demon</label>
+            <select id="existingDemonId" name="existingDemonId" className="pc-select" required>
+              <option value="">Choose demon...</option>
+              {demons.map((demon) => (
+                <option key={demon.id} value={demon.id}>
+                  #{demon.position} — {demon.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="videoUrl">Video link</label>
+            <input id="videoUrl" name="videoUrl" type="url" required />
+          </div>
+
+          <PlayerFields
+            players={players}
+            addingNew={addingNew}
+            selectedPlayer={selectedPlayer}
+            setAddingNew={setAddingNew}
+            setSelectedPlayer={setSelectedPlayer}
+          />
+
+          <SubmitButton label="Submit completion" />
+          {completionState.message && (
+            <p className={`pc-toast ${completionState.ok ? "pc-toast-ok" : "pc-toast-error"}`}>
+              {completionState.message}
             </p>
           )}
         </form>
-      ) : (
+      )}
+
+      {tab === "progress" && (
         <form action={progressAction}>
           <div className="mb-4">
             <label htmlFor="existingDemonId">Select existing demon</label>
@@ -178,7 +221,6 @@ export function SubmitForm({ players, demons }: SubmitFormProps) {
           </div>
 
           <SubmitButton label="Submit progress" />
-
           {progressState.message && (
             <p className={`pc-toast ${progressState.ok ? "pc-toast-ok" : "pc-toast-error"}`}>
               {progressState.message}
