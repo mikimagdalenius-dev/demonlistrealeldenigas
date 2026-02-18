@@ -61,8 +61,8 @@ export default async function PlayersPage() {
               </div>
               <div className="pc-demon-points">total points: {player.points}</div>
 
-              <div className="pc-top5">
-                <div className="pc-top5-title">Top 5 hardest demons</div>
+              <details className="pc-top5">
+                <summary className="pc-top5-title">Top 5 hardest demons</summary>
                 {player.hardestTop5.length > 0 ? (
                   <ul className="pc-top5-list">
                     {player.hardestTop5.map((demon) => (
@@ -74,7 +74,7 @@ export default async function PlayersPage() {
                 ) : (
                   <div className="pc-top5-empty">No completions yet.</div>
                 )}
-              </div>
+              </details>
             </div>
           </div>
         </article>

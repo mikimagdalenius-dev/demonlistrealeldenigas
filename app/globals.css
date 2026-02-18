@@ -277,6 +277,24 @@ a:hover {
   color: #4b5563;
   font-weight: 700;
   margin-bottom: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pc-top5 > summary {
+  list-style: none;
+}
+
+.pc-top5 > summary::-webkit-details-marker {
+  display: none;
+}
+
+.pc-top5-title::before {
+  content: "▸ ";
+}
+
+.pc-top5[open] .pc-top5-title::before {
+  content: "▾ ";
 }
 
 .pc-top5-list {
