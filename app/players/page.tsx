@@ -4,15 +4,22 @@ import { pointsFromDemon } from "@/lib/points";
 export const dynamic = "force-dynamic";
 
 export default async function PlayersPage() {
-  const players = await prisma.player.findMany({
-    include: {
-      completions: {
-        include: {
-          demon: true
+  let players: Awaited<ReturnType<typeof prisma.player.findMany>> = [];
+  let dbOffline = false;
+
+  try {
+    players = await prisma.player.findMany({
+      include: {
+        completions: {
+          include: {
+            demon: true
+          }
         }
       }
-    }
-  });
+    });
+  } catch {
+    dbOffline = true;
+  }
 
   const rows = players
     .map((player) => {
@@ -36,6 +43,12 @@ export default async function PlayersPage() {
         <h1 className="pc-title">Players</h1>
         <p className="pc-subtitle mt-2">Leaderboard based on completions and demon points.</p>
       </div>
+
+      {dbOffline && (
+        <div className="pc-panel border-red-900/60 bg-red-950/20 p-4 text-sm text-red-200">
+          Database is not connected yet. Player stats will appear after PostgreSQL + Prisma are configured.
+        </div>
+      )}
 
       <div className="pc-panel overflow-x-auto">
         <table className="pc-table min-w-full divide-y divide-zinc-800 text-sm">

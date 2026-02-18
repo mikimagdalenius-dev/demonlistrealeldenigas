@@ -3,9 +3,16 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 export default async function DemonlistPage() {
-  const demons = await prisma.demon.findMany({
-    orderBy: { position: "asc" }
-  });
+  let demons: Awaited<ReturnType<typeof prisma.demon.findMany>> = [];
+  let dbOffline = false;
+
+  try {
+    demons = await prisma.demon.findMany({
+      orderBy: { position: "asc" }
+    });
+  } catch {
+    dbOffline = true;
+  }
 
   return (
     <section className="space-y-6">
@@ -15,6 +22,13 @@ export default async function DemonlistPage() {
           Hardest demons ranked for our private group. Inspired by Pointercrate style.
         </p>
       </div>
+
+      {dbOffline && (
+        <div className="pc-panel border-red-900/60 bg-red-950/20 p-4 text-sm text-red-200">
+          Database is not connected yet. Set <code className="rounded bg-black/40 px-1 py-0.5">DATABASE_URL</code>
+          and start PostgreSQL to see live data.
+        </div>
+      )}
 
       <div className="pc-panel overflow-x-auto">
         <table className="pc-table min-w-full divide-y divide-zinc-800 text-sm">
