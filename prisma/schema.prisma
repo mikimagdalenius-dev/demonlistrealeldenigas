@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Demon {
+  id            Int          @id @default(autoincrement())
+  position      Int          @unique
+  name          String
+  videoUrl      String
+  publisherName String
+  difficulty    Int
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  submissions   Submission[]
+  completions   Completion[]
+}
+
+model Player {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  completions Completion[]
+}
+
+model Completion {
+  id        Int      @id @default(autoincrement())
+  playerId  Int
+  demonId   Int
+  createdAt DateTime @default(now())
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  demon     Demon    @relation(fields: [demonId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, demonId])
+}
+
+model Submission {
+  id            Int      @id @default(autoincrement())
+  demonName     String
+  videoUrl      String
+  publisherName String
+  difficulty    Int
+  demonId       Int?
+  createdAt     DateTime @default(now())
+  demon         Demon?   @relation(fields: [demonId], references: [id], onDelete: SetNull)
+}
