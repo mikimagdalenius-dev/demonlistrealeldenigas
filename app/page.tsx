@@ -39,7 +39,7 @@ export default async function DemonlistPage() {
     name: string;
     videoUrl: string;
     publisherName: string;
-    completions: { id: number; videoUrl: string; player: { name: string } }[];
+    completions: { id: number; videoUrl: string; createdAt: Date; player: { name: string } }[];
   }[] = [];
 
   try {
@@ -65,10 +65,13 @@ export default async function DemonlistPage() {
   return (
     <section className="pc-list-only">
       {demons.map((demon) => {
-        const completionRuns = demon.completions.filter((run) => run.videoUrl.trim().length > 0);
+        const completionRuns = demon.completions
+          .filter((run) => run.videoUrl.trim().length > 0)
+          .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
         const runs = completionRuns.length
           ? completionRuns
-          : [{ id: -1, videoUrl: demon.videoUrl, player: { name: demon.publisherName } }];
+          : [{ id: -1, videoUrl: demon.videoUrl, createdAt: new Date(0), player: { name: demon.publisherName } }];
 
         return (
           <article key={demon.id} className="pc-card">
