@@ -3,8 +3,14 @@ import { pointsFromDemon } from "@/lib/points";
 
 export const dynamic = "force-dynamic";
 
+type PlayerWithCompletions = {
+  id: number;
+  name: string;
+  completions: { demon: { position: number; difficulty: number } }[];
+};
+
 export default async function PlayersPage() {
-  let players: Awaited<ReturnType<typeof prisma.player.findMany>> = [];
+  let players: PlayerWithCompletions[] = [];
   let dbOffline = false;
 
   try {
@@ -28,59 +34,42 @@ export default async function PlayersPage() {
         return sum + pointsFromDemon(completion.demon.position, completion.demon.difficulty);
       }, 0);
 
-      return {
-        id: player.id,
-        name: player.name,
-        completedDemons,
-        points
-      };
+      return { id: player.id, name: player.name, completedDemons, points };
     })
     .sort((a, b) => b.points - a.points);
 
   return (
-    <section className="space-y-6">
-      <div className="pc-panel p-6">
-        <h1 className="pc-title">Players</h1>
-        <p className="pc-subtitle mt-2">Leaderboard based on completions and demon points.</p>
+    <section className="pc-grid">
+      <div className="pc-stack">
+        {dbOffline && <div className="pc-card pc-empty">Database is not connected yet.</div>}
+
+        {rows.map((player, index) => (
+          <article key={player.id} className="pc-card">
+            <div className="pc-demon-row" style={{ gridTemplateColumns: "1fr" }}>
+              <div>
+                <div className="pc-demon-title">
+                  #{index + 1}  {player.name}
+                </div>
+                <div className="pc-demon-meta">
+                  completed demons: <strong>{player.completedDemons}</strong>
+                </div>
+                <div className="pc-demon-points">total points: {player.points}</div>
+              </div>
+            </div>
+          </article>
+        ))}
+
+        {rows.length === 0 && <div className="pc-card pc-empty">No players yet.</div>}
       </div>
 
-      {dbOffline && (
-        <div className="pc-panel border-red-900/60 bg-red-950/20 p-4 text-sm text-red-200">
-          Database is not connected yet. Player stats will appear after PostgreSQL + Prisma are configured.
-        </div>
-      )}
-
-      <div className="pc-panel overflow-x-auto">
-        <table className="pc-table min-w-full divide-y divide-zinc-800 text-sm">
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>Player</th>
-              <th>Completed Demons</th>
-              <th>Points</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-zinc-800 bg-[#101010]">
-            {rows.map((player, index) => (
-              <tr key={player.id} className="transition hover:bg-[#171717]">
-                <td>
-                  <span className="pc-rank">{index + 1}</span>
-                </td>
-                <td className="font-semibold text-zinc-100">{player.name}</td>
-                <td className="text-zinc-300">{player.completedDemons}</td>
-                <td className="font-bold text-red-300">{player.points}</td>
-              </tr>
-            ))}
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={4} className="px-4 py-10 text-center text-zinc-400">
-                  No players yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <aside className="pc-stack">
+        <section className="pc-side-block">
+          <h2 className="pc-side-title">Players</h2>
+          <p className="pc-side-text">
+            Ranking is based on completed demons and weighted points from list position + difficulty.
+          </p>
+        </section>
+      </aside>
     </section>
   );
 }

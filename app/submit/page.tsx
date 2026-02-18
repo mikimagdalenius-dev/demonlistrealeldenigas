@@ -2,81 +2,52 @@ import { submitDemon } from "./actions";
 
 export default function SubmitPage() {
   return (
-    <section className="space-y-6">
-      <div className="pc-panel p-6">
-        <h1 className="pc-title">Submit Demon</h1>
-        <p className="pc-subtitle mt-2">Send a demon entry to the private list database.</p>
+    <section className="pc-grid">
+      <div className="pc-stack">
+        <article className="pc-card">
+          <div className="pc-demon-row" style={{ gridTemplateColumns: "1fr" }}>
+            <div>
+              <div className="pc-demon-title">Submit Record</div>
+              <div className="pc-demon-points">Add a demon to your private main list.</div>
+            </div>
+          </div>
+        </article>
+
+        <form action={submitDemon} className="pc-form">
+          <div className="mb-4">
+            <label htmlFor="name">Demon name</label>
+            <input id="name" name="name" required />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="videoUrl">Video link</label>
+            <input id="videoUrl" name="videoUrl" type="url" required />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="publisherName">Publisher / Verifier</label>
+            <input id="publisherName" name="publisherName" required />
+          </div>
+
+          <div className="mb-5">
+            <label htmlFor="difficulty">Difficulty (1-10)</label>
+            <input id="difficulty" name="difficulty" type="number" min={1} max={10} required />
+          </div>
+
+          <button type="submit" className="pc-btn">
+            Submit
+          </button>
+        </form>
       </div>
 
-      <form action={submitDemon} className="pc-panel space-y-5 p-6">
-        <div className="space-y-2">
-          <label htmlFor="name" className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
-            Demon name
-          </label>
-          <input
-            id="name"
-            name="name"
-            required
-            className="w-full rounded-sm border border-zinc-700 bg-[#161616] px-3 py-2 text-zinc-100 outline-none ring-red-500/50 transition focus:border-red-500 focus:ring-2"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label
-            htmlFor="videoUrl"
-            className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
-          >
-            Video link
-          </label>
-          <input
-            id="videoUrl"
-            name="videoUrl"
-            type="url"
-            required
-            className="w-full rounded-sm border border-zinc-700 bg-[#161616] px-3 py-2 text-zinc-100 outline-none ring-red-500/50 transition focus:border-red-500 focus:ring-2"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label
-            htmlFor="publisherName"
-            className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
-          >
-            Publisher / verifier
-          </label>
-          <input
-            id="publisherName"
-            name="publisherName"
-            required
-            className="w-full rounded-sm border border-zinc-700 bg-[#161616] px-3 py-2 text-zinc-100 outline-none ring-red-500/50 transition focus:border-red-500 focus:ring-2"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label
-            htmlFor="difficulty"
-            className="text-xs font-semibold uppercase tracking-wide text-zinc-400"
-          >
-            Difficulty (1-10)
-          </label>
-          <input
-            id="difficulty"
-            name="difficulty"
-            type="number"
-            min={1}
-            max={10}
-            required
-            className="w-full rounded-sm border border-zinc-700 bg-[#161616] px-3 py-2 text-zinc-100 outline-none ring-red-500/50 transition focus:border-red-500 focus:ring-2"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="rounded-sm bg-red-600 px-4 py-2 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-red-500"
-        >
-          Submit Entry
-        </button>
-      </form>
+      <aside className="pc-stack">
+        <section className="pc-side-block">
+          <h2 className="pc-side-title">Submission Tips</h2>
+          <p className="pc-side-text">
+            Make sure the video is public and clearly shows the completion from start to finish.
+          </p>
+        </section>
+      </aside>
     </section>
   );
 }

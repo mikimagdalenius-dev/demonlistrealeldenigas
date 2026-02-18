@@ -2,6 +2,25 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+function thumbnailFromVideo(url: string): string {
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname.includes("youtu.be")) {
+      const id = parsed.pathname.split("/").filter(Boolean)[0];
+      if (id) return `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+    }
+
+    if (parsed.hostname.includes("youtube.com")) {
+      const id = parsed.searchParams.get("v");
+      if (id) return `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+    }
+  } catch {
+    // ignore
+  }
+
+  return "https://dummyimage.com/460x212/e5e7eb/6b7280&text=No+Thumbnail";
+}
+
 export default async function DemonlistPage() {
   let demons: Awaited<ReturnType<typeof prisma.demon.findMany>> = [];
   let dbOffline = false;
@@ -14,63 +33,60 @@ export default async function DemonlistPage() {
     dbOffline = true;
   }
 
+  const editors = ["3465", "Latko", "Tripod", "Vonic", "Bosonic", "Ranian", "Spectre"];
+
   return (
-    <section className="space-y-6">
-      <div className="pc-panel p-6">
-        <h1 className="pc-title">Demon List</h1>
-        <p className="pc-subtitle mt-2">
-          Hardest demons ranked for our private group. Inspired by Pointercrate style.
-        </p>
+    <section className="pc-grid">
+      <div className="pc-stack">
+        {dbOffline && (
+          <div className="pc-card pc-empty">
+            Database is not connected yet. Set <code>DATABASE_URL</code> and start PostgreSQL.
+          </div>
+        )}
+
+        {demons.map((demon) => (
+          <article key={demon.id} className="pc-card">
+            <div className="pc-demon-row">
+              <img className="pc-thumb" src={thumbnailFromVideo(demon.videoUrl)} alt={demon.name} />
+
+              <div>
+                <div className="pc-demon-title">
+                  #{demon.position}  {demon.name}
+                </div>
+                <div className="pc-demon-meta">
+                  published by <strong>{demon.publisherName}</strong>
+                </div>
+                <div className="pc-demon-points">
+                  Difficulty {demon.difficulty}/10  <a href={demon.videoUrl}>video proof</a>
+                </div>
+              </div>
+            </div>
+          </article>
+        ))}
+
+        {demons.length === 0 && <div className="pc-card pc-empty">No demons yet. Add one in Submit Record.</div>}
       </div>
 
-      {dbOffline && (
-        <div className="pc-panel border-red-900/60 bg-red-950/20 p-4 text-sm text-red-200">
-          Database is not connected yet. Set <code className="rounded bg-black/40 px-1 py-0.5">DATABASE_URL</code>
-          and start PostgreSQL to see live data.
-        </div>
-      )}
-
-      <div className="pc-panel overflow-x-auto">
-        <table className="pc-table min-w-full divide-y divide-zinc-800 text-sm">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Demon</th>
-              <th>Publisher / Verifier</th>
-              <th>Difficulty</th>
-              <th>Video Proof</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-zinc-800 bg-[#101010]">
-            {demons.map((demon) => (
-              <tr key={demon.id} className="transition hover:bg-[#171717]">
-                <td>
-                  <span className="pc-rank">{demon.position}</span>
-                </td>
-                <td className="font-semibold text-zinc-100">{demon.name}</td>
-                <td className="text-zinc-300">{demon.publisherName}</td>
-                <td>
-                  <span className="rounded bg-zinc-800 px-2 py-1 text-xs font-semibold text-zinc-200">
-                    {demon.difficulty}/10
-                  </span>
-                </td>
-                <td>
-                  <a href={demon.videoUrl} target="_blank" rel="noreferrer">
-                    Watch run
-                  </a>
-                </td>
-              </tr>
+      <aside className="pc-stack">
+        <section className="pc-side-block">
+          <h2 className="pc-side-title">List Editors</h2>
+          <p className="pc-side-text">
+            Contact any of these people if you have problems with the list or want to see a thing changed.
+          </p>
+          <div className="pc-side-list">
+            {editors.map((name) => (
+              <span key={name}>{name}</span>
             ))}
-            {demons.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-zinc-400">
-                  No demons yet. Use the Submit page to add one.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+          </div>
+        </section>
+
+        <section className="pc-side-block">
+          <h2 className="pc-side-title">Guidelines</h2>
+          <p className="pc-side-text">
+            Please include clear video proof and correct metadata when submitting. Keep records valid and clean.
+          </p>
+        </section>
+      </aside>
     </section>
   );
 }
