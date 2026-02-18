@@ -2,10 +2,20 @@
 
 import { useActionState, useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { initialSubmitState, submitDemon } from "./actions";
+import { submitDemon } from "./actions";
 
 type SubmitFormProps = {
   players: string[];
+};
+
+type SubmitState = {
+  ok: boolean;
+  message: string;
+};
+
+const initialSubmitState: SubmitState = {
+  ok: false,
+  message: ""
 };
 
 function SubmitButton() {

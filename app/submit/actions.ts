@@ -3,14 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
-export type SubmitState = {
+type SubmitState = {
   ok: boolean;
   message: string;
-};
-
-export const initialSubmitState: SubmitState = {
-  ok: false,
-  message: ""
 };
 
 function toPositiveInt(value: FormDataEntryValue | null, fieldName: string): number {
