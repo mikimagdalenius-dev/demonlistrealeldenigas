@@ -6,7 +6,7 @@ _Learn about the person you're helping. Update this as you go._
 - **What to call them:**
 - **Pronouns:** _(optional)_
 - **Timezone:**
-- **Notes:**
+- **Notes:** Prefiere que, al planificar comidas de lunes a jueves, el primer plato sea por defecto una ensalada personalizable “al gusto”.
 
 ## Context
 
