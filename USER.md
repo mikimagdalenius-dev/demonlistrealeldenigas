@@ -6,7 +6,7 @@ _Learn about the person you're helping. Update this as you go._
 - **What to call them:**
 - **Pronouns:** _(optional)_
 - **Timezone:**
-- **Notes:** Prefiere que, al planificar comidas de lunes a jueves, el primer plato sea por defecto una ensalada personalizable “al gusto”.
+- **Notes:** Prefiere que, al planificar comidas de lunes a jueves, el primer plato sea por defecto una ensalada personalizable “al gusto”. Además, cuando se piden cambios en la app, prefiere metodología completa: implementar por código y publicar en la web (deploy) para validar resultado en producción.
 
 ## Context
 
