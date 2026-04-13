@@ -129,6 +129,34 @@ a:hover {
   font-weight: 800;
   color: #1f2430;
   line-height: 1.1;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pc-pts-badge {
+  font-size: clamp(12px, 0.9vw, 16px);
+  font-weight: 700;
+  color: #2f6ea1;
+  border: 1px dashed #a8c4e0;
+  background: #eaf2fa;
+  padding: 2px 8px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.pc-thumb-link {
+  display: block;
+  flex-shrink: 0;
+}
+
+.pc-thumb-link .pc-thumb {
+  transition: opacity 0.15s ease;
+}
+
+.pc-thumb-link:hover .pc-thumb {
+  opacity: 0.8;
 }
 
 .pc-demon-meta {
