@@ -104,7 +104,14 @@ a:hover {
 .pc-card {
   background: #f8f8f8;
   border: 1px dashed #d4d4d4;
-  animation: fadeInUp 0.28s ease;
+  animation: fadeInUp 0.3s ease both;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.pc-card:hover {
+  transform: translateY(-2px);
+  border-color: #b0b8c4;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
 }
 
 .pc-demon-row {
@@ -398,6 +405,7 @@ a:hover {
   display: grid;
   grid-template-columns: 188px 1fr;
   gap: 16px;
+  animation: fadeInUp 0.3s ease both;
 }
 
 .pc-skeleton-thumb,
@@ -448,7 +456,7 @@ a:hover {
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;

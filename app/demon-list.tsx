@@ -77,7 +77,7 @@ export function DemonList({ demons }: { demons: Demon[] }) {
       </div>
 
       <section className="pc-list-only">
-        {filtered.map((demon) => {
+        {filtered.map((demon, index) => {
           const completionRuns = demon.completions
             .filter((run) => run.videoUrl.trim().length > 0)
             .sort(
@@ -99,7 +99,11 @@ export function DemonList({ demons }: { demons: Demon[] }) {
           const points = pointsFromDemon(demon.position);
 
           return (
-            <article key={demon.id} className="pc-card">
+            <article
+              key={demon.id}
+              className="pc-card"
+              style={{ animationDelay: `${Math.min(index * 40, 400)}ms` }}
+            >
               <div className="pc-demon-row">
                 <a
                   href={safeHref(runs[0].videoUrl)}
