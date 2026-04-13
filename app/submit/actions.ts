@@ -106,6 +106,11 @@ export async function submitDemon(_prev: SubmitState, formData: FormData): Promi
         }
       });
 
+      // Por si el jugador tenía progreso previo en este demon
+      await tx.progress.deleteMany({
+        where: { playerId: player.id, demonId: created.id },
+      });
+
       await tx.submission.create({
         data: {
           demonName: name,
@@ -173,6 +178,11 @@ export async function submitCompletion(_prev: SubmitState, formData: FormData): 
           demonId,
           videoUrl
         }
+      });
+
+      // Si ya tenía progreso en este demon, se elimina al completarlo
+      await tx.progress.deleteMany({
+        where: { playerId: player.id, demonId },
       });
     });
 
