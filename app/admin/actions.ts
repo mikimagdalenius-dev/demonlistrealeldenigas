@@ -78,7 +78,8 @@ export async function moveDemonAction(
     if (!neighbor) return;
 
     // Swap usando posición temporal para no violar unique constraint
-    await tx.demon.update({ where: { id: demon.id }, data: { position: 0 } });
+    const total = await tx.demon.count();
+    await tx.demon.update({ where: { id: demon.id }, data: { position: total + 9999 } });
     await tx.demon.update({
       where: { id: neighbor.id },
       data: { position: demon.position },
@@ -157,7 +158,8 @@ export async function editDemonAction(
     revalidatePath("/players");
 
     return { ok: true, message: "Demonio actualizado." };
-  } catch {
+  } catch (err) {
+    console.error("[editDemonAction]", err);
     return { ok: false, message: "Error al guardar los cambios." };
   }
 }

@@ -38,6 +38,15 @@ function thumbnailFromVideo(url: string): string {
   return "https://dummyimage.com/320x180/e5e7eb/6b7280&text=No+Thumbnail";
 }
 
+function safeHref(url: string): string {
+  try {
+    const { protocol } = new URL(url);
+    return protocol === "http:" || protocol === "https:" ? url : "#";
+  } catch {
+    return "#";
+  }
+}
+
 export function DemonList({ demons }: { demons: Demon[] }) {
   const [query, setQuery] = useState("");
 
@@ -93,7 +102,7 @@ export function DemonList({ demons }: { demons: Demon[] }) {
             <article key={demon.id} className="pc-card">
               <div className="pc-demon-row">
                 <a
-                  href={runs[0].videoUrl}
+                  href={safeHref(runs[0].videoUrl)}
                   target="_blank"
                   rel="noreferrer"
                   className="pc-thumb-link"
@@ -128,7 +137,7 @@ export function DemonList({ demons }: { demons: Demon[] }) {
                               {run.player.name}
                             </span>
                             <a
-                              href={run.videoUrl}
+                              href={safeHref(run.videoUrl)}
                               target="_blank"
                               rel="noreferrer"
                             >

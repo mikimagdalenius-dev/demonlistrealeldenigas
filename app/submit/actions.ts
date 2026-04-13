@@ -24,11 +24,22 @@ function toPercentInt(value: FormDataEntryValue | null): number {
   return parsed;
 }
 
+const MAX_NAME_LEN = 100;
+const MAX_URL_LEN = 500;
+
 function normalizeUrl(raw: string): string {
   const value = raw.trim();
   if (!value) return value;
-  if (/^https?:\/\//i.test(value)) return value;
-  return `https://${value}`;
+  const withProtocol = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+  try {
+    const { protocol } = new URL(withProtocol);
+    if (protocol !== "http:" && protocol !== "https:") {
+      throw new Error("URL must use http or https");
+    }
+  } catch {
+    throw new Error("Invalid URL");
+  }
+  return withProtocol;
 }
 
 function resolvePlayerName(selectedPlayer: string, newPlayerName: string): string {
@@ -51,20 +62,19 @@ export async function submitDemon(_prev: SubmitState, formData: FormData): Promi
     if (!name || !videoUrl || !publisherName) {
       return { ok: false, message: "Please complete all required fields." };
     }
+    if (name.length > MAX_NAME_LEN || publisherName.length > MAX_NAME_LEN) {
+      return { ok: false, message: `Name too long (max ${MAX_NAME_LEN} chars).` };
+    }
+    if (videoUrl.length > MAX_URL_LEN) {
+      return { ok: false, message: `URL too long (max ${MAX_URL_LEN} chars).` };
+    }
 
     await prisma.$transaction(async (tx) => {
-      const demonsToShift = await tx.demon.findMany({
+      // Single UPDATE statement — PostgreSQL checks unique constraint after all rows are updated
+      await tx.demon.updateMany({
         where: { position: { gte: provisionalPosition } },
-        orderBy: { position: "desc" },
-        select: { id: true, position: true }
+        data: { position: { increment: 1 } },
       });
-
-      for (const demon of demonsToShift) {
-        await tx.demon.update({
-          where: { id: demon.id },
-          data: { position: demon.position + 1 }
-        });
-      }
 
       const created = await tx.demon.create({
         data: {
@@ -112,7 +122,8 @@ export async function submitDemon(_prev: SubmitState, formData: FormData): Promi
     revalidatePath("/submit");
 
     return { ok: true, message: "Demon submitted correctly." };
-  } catch {
+  } catch (err) {
+    console.error("[submitDemon]", err);
     return { ok: false, message: "Something went wrong while submitting. Try again." };
   }
 }
@@ -131,6 +142,12 @@ export async function submitCompletion(_prev: SubmitState, formData: FormData): 
     const playerName = resolvePlayerName(selectedPlayer, newPlayerName);
     if (!playerName || !videoUrl) {
       return { ok: false, message: "Please complete all required fields." };
+    }
+    if (playerName.length > MAX_NAME_LEN) {
+      return { ok: false, message: `Player name too long (max ${MAX_NAME_LEN} chars).` };
+    }
+    if (videoUrl.length > MAX_URL_LEN) {
+      return { ok: false, message: `URL too long (max ${MAX_URL_LEN} chars).` };
     }
 
     await prisma.$transaction(async (tx) => {
@@ -164,7 +181,8 @@ export async function submitCompletion(_prev: SubmitState, formData: FormData): 
     revalidatePath("/submit");
 
     return { ok: true, message: "Completion submitted correctly." };
-  } catch {
+  } catch (err) {
+    console.error("[submitCompletion]", err);
     return { ok: false, message: "Could not submit completion." };
   }
 }
@@ -215,7 +233,8 @@ export async function submitProgress(_prev: SubmitState, formData: FormData): Pr
     revalidatePath("/submit");
 
     return { ok: true, message: "Progress submitted correctly." };
-  } catch {
+  } catch (err) {
+    console.error("[submitProgress]", err);
     return { ok: false, message: "Could not submit progress." };
   }
 }
