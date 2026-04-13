@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { submitCompletion, submitDemon, submitProgress } from "./actions";
 
@@ -42,8 +42,6 @@ function PlayerFields({
   setAddingNew: (v: boolean) => void;
   setSelectedPlayer: (v: string) => void;
 }) {
-  const options = useMemo(() => Array.from(new Set(players)), [players]);
-
   return (
     <>
       <div className="mb-2">
@@ -63,7 +61,7 @@ function PlayerFields({
             }
           }}
         >
-          {options.map((player) => (
+          {players.map((player) => (
             <option key={player} value={player}>
               {player}
             </option>

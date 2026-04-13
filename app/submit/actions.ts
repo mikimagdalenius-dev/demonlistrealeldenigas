@@ -27,19 +27,18 @@ function toPercentInt(value: FormDataEntryValue | null): number {
 const MAX_NAME_LEN = 100;
 const MAX_URL_LEN = 500;
 
+// Añade https:// si falta protocolo y valida que sea http/https (previene javascript: URLs)
 function normalizeUrl(raw: string): string {
   const value = raw.trim();
   if (!value) return value;
   const withProtocol = /^https?:\/\//i.test(value) ? value : `https://${value}`;
   try {
     const { protocol } = new URL(withProtocol);
-    if (protocol !== "http:" && protocol !== "https:") {
-      throw new Error("URL must use http or https");
-    }
+    if (protocol !== "http:" && protocol !== "https:") throw new Error();
+    return withProtocol;
   } catch {
-    throw new Error("Invalid URL");
+    throw new Error("URL inválida");
   }
-  return withProtocol;
 }
 
 function resolvePlayerName(selectedPlayer: string, newPlayerName: string): string {
@@ -111,14 +110,15 @@ export async function submitDemon(_prev: SubmitState, formData: FormData): Promi
         where: { playerId: player.id, demonId: created.id },
       });
 
+      // Registro de auditoría — no se usa en la UI pero queda como historial
       await tx.submission.create({
         data: {
           demonName: name,
           videoUrl,
           publisherName,
           provisionalPosition,
-          demonId: created.id
-        }
+          demonId: created.id,
+        },
       });
     });
 

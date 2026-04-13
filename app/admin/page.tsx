@@ -8,15 +8,7 @@ import {
   deleteCompletionAction,
   deleteProgressAction,
 } from "./actions";
-
-function safeAdminHref(url: string): string {
-  try {
-    const { protocol } = new URL(url);
-    return protocol === "http:" || protocol === "https:" ? url : "#";
-  } catch {
-    return "#";
-  }
-}
+import { safeHref } from "@/lib/url";
 import { LoginForm } from "./login-form";
 
 export const dynamic = "force-dynamic";
@@ -189,7 +181,7 @@ export default async function AdminPage() {
                     <td style={{ padding: "10px 12px", color: "#4b5563" }}>{c.player.name}</td>
                     <td style={{ padding: "10px 12px" }}>
                       {c.videoUrl ? (
-                        <a href={safeAdminHref(c.videoUrl)} target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>
+                        <a href={safeHref(c.videoUrl)} target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>
                           Ver vídeo
                         </a>
                       ) : (
