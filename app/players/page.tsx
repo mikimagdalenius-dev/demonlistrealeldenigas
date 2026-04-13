@@ -81,6 +81,9 @@ export default async function PlayersPage() {
                     {player.hardestTop5.map((demon) => (
                       <li key={`${player.id}-${demon.position}-${demon.name}`} className="pc-top5-item">
                         #{demon.position} — {demon.name}
+                        <span className="pc-pts-badge" style={{ marginLeft: 8 }}>
+                          {pointsFromDemon(demon.position)} pts
+                        </span>
                       </li>
                     ))}
                   </ul>
