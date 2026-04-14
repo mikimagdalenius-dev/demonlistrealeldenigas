@@ -1,50 +1,26 @@
 "use client";
 
+"use client";
+
 import { useState } from "react";
+import Link from "next/link";
 import { pointsFromDemon } from "@/lib/points";
 import { safeHref } from "@/lib/url";
+import { youtubeThumbnail } from "@/lib/youtube";
 
-// Tipo de demonio que recibe este componente desde page.tsx
 type Demon = {
   id: number;
   position: number;
   name: string;
   videoUrl: string;
+  thumbnailVideoUrl: string | null;
   publisherName: string;
-  // createdAt es Date en el servidor, string serializado en el cliente
   completions: { id: number; videoUrl: string; createdAt: Date | string; player: { name: string } }[];
 };
 
-// ── YouTube helpers ───────────────────────────────────────────────────────────
-
-function extractYouTubeId(url: string): string | null {
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
-    /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
-  ];
-  for (const pattern of patterns) {
-    const match = url.trim().match(pattern);
-    if (match?.[1]) return match[1];
-  }
-  try {
-    const v = new URL(url.trim()).searchParams.get("v");
-    if (v && /^[a-zA-Z0-9_-]{11}$/.test(v)) return v;
-  } catch {
-    // URL inválida, sin miniatura
-  }
-  return null;
-}
-
-function thumbnailUrl(videoUrl: string): string {
-  const id = extractYouTubeId(videoUrl);
-  return id
-    ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg`
-    : "https://dummyimage.com/320x180/e5e7eb/6b7280&text=No+Thumbnail";
-}
-
 // ── Componente principal ──────────────────────────────────────────────────────
 
-export function DemonList({ demons }: { demons: Demon[] }) {
+export function DemonList({ demons, stats }: { demons: Demon[]; stats: { demons: number; players: number; completions: number } }) {
   const [query, setQuery] = useState("");
 
   const filtered = query.trim()
@@ -53,21 +29,21 @@ export function DemonList({ demons }: { demons: Demon[] }) {
 
   return (
     <>
+      <div className="pc-stats-bar">
+        <span><strong>{stats.demons}</strong> demons</span>
+        <span className="pc-stats-sep">·</span>
+        <span><strong>{stats.players}</strong> players</span>
+        <span className="pc-stats-sep">·</span>
+        <span><strong>{stats.completions}</strong> completions</span>
+      </div>
+
       <div style={{ marginBottom: 16 }}>
         <input
           type="search"
-          placeholder="Buscar demonio..."
+          placeholder="Buscar demon..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          style={{
-            width: "100%",
-            border: "1px dashed #cfd3d9",
-            background: "#fff",
-            padding: "10px 14px",
-            fontFamily: "inherit",
-            fontSize: 15,
-            fontWeight: 600,
-          }}
+          className="pc-search-input"
         />
       </div>
 
@@ -93,12 +69,15 @@ export function DemonList({ demons }: { demons: Demon[] }) {
               <div className="pc-demon-row">
                 {/* Miniatura — clic abre el vídeo del primer run */}
                 <a href={safeHref(runs[0].videoUrl)} target="_blank" rel="noreferrer" className="pc-thumb-link">
-                  <img className="pc-thumb" src={thumbnailUrl(runs[0].videoUrl)} alt={demon.name} />
+                  <img className="pc-thumb" src={youtubeThumbnail(demon.thumbnailVideoUrl || runs[0].videoUrl)} alt={demon.name} />
                 </a>
 
                 <div>
                   <div className="pc-demon-title">
-                    #{demon.position} — {demon.name}
+                    #{demon.position} —{" "}
+                    <Link href={`/demon/${demon.id}`} style={{ color: "inherit", textDecoration: "none" }} className="pc-demon-name-link">
+                      {demon.name}
+                    </Link>
                     <span className="pc-pts-badge">{points} pts</span>
                   </div>
                   <div className="pc-demon-meta">

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "./theme-toggle";
 
 const tabs = [
   { href: "/", label: "Main List" },
@@ -17,6 +18,9 @@ export function Navbar() {
       <div className="pc-nav-wrap">
         <div className="pc-nav-main">
           <div className="pc-logo">DEMONLIST ELDENIGAS</div>
+          <div className="pc-theme-wrap">
+            <ThemeToggle />
+          </div>
         </div>
 
         <nav className="pc-tabs" aria-label="main navigation">

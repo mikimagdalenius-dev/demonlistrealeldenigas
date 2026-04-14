@@ -1,15 +1,15 @@
 import { isAdminAuthed } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
-import Link from "next/link";
 import {
   logoutAction,
   deleteDemonAction,
-  moveDemonAction,
   deleteCompletionAction,
   deleteProgressAction,
 } from "./actions";
 import { safeHref } from "@/lib/url";
 import { LoginForm } from "./login-form";
+import { DemonDragList } from "./demon-drag-list";
+import { ConfirmDeleteBtn } from "./confirm-delete-btn";
 
 export const dynamic = "force-dynamic";
 
@@ -62,96 +62,16 @@ export default async function AdminPage() {
         <div style={{ fontWeight: 700, fontSize: 16, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 12, color: "#2f3440" }}>
           Demonios ({demons.length})
         </div>
-
-        <div className="pc-card" style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
-            <thead>
-              <tr style={{ borderBottom: "1px dashed #d4d4d4", textAlign: "left" }}>
-                <th style={{ padding: "10px 12px", fontWeight: 700, width: 50 }}>#</th>
-                <th style={{ padding: "10px 12px", fontWeight: 700 }}>Nombre</th>
-                <th style={{ padding: "10px 12px", fontWeight: 700 }}>Publisher</th>
-                <th style={{ padding: "10px 12px", fontWeight: 700, textAlign: "center", width: 90 }}>Completes</th>
-                <th style={{ padding: "10px 12px", fontWeight: 700, textAlign: "right", width: 230 }}>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {demons.map((demon) => {
-                const moveUpAction = moveDemonAction.bind(null, demon.id, "up");
-                const moveDownAction = moveDemonAction.bind(null, demon.id, "down");
-                const deleteAction = deleteDemonAction.bind(null, demon.id);
-
-                return (
-                  <tr key={demon.id} style={{ borderBottom: "1px dashed #e8e8e8" }}>
-                    <td style={{ padding: "10px 12px", fontWeight: 700, color: "#4b5563" }}>
-                      {demon.position}
-                    </td>
-                    <td style={{ padding: "10px 12px", fontWeight: 600 }}>{demon.name}</td>
-                    <td style={{ padding: "10px 12px", color: "#4b5563" }}>{demon.publisherName}</td>
-                    <td style={{ padding: "10px 12px", textAlign: "center", color: "#4b5563" }}>
-                      {demon._count.completions}
-                    </td>
-                    <td style={{ padding: "10px 12px", textAlign: "right" }}>
-                      <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", flexWrap: "wrap" }}>
-                        <form action={moveUpAction} style={{ display: "inline" }}>
-                          <button
-                            type="submit"
-                            className="pc-btn pc-btn-secondary"
-                            title="Subir posición"
-                            disabled={demon.position === 1}
-                            style={{ padding: "5px 10px", fontSize: 13 }}
-                          >
-                            ↑
-                          </button>
-                        </form>
-                        <form action={moveDownAction} style={{ display: "inline" }}>
-                          <button
-                            type="submit"
-                            className="pc-btn pc-btn-secondary"
-                            title="Bajar posición"
-                            disabled={demon.position === demons.length}
-                            style={{ padding: "5px 10px", fontSize: 13 }}
-                          >
-                            ↓
-                          </button>
-                        </form>
-                        <Link
-                          href={`/admin/demon/${demon.id}`}
-                          className="pc-btn pc-btn-secondary"
-                          style={{ padding: "5px 10px", fontSize: 13, display: "inline-block" }}
-                        >
-                          Editar
-                        </Link>
-                        <form action={deleteAction} style={{ display: "inline" }}>
-                          <button
-                            type="submit"
-                            style={{
-                              border: "1px dashed #c0392b",
-                              background: "#e74c3c",
-                              color: "#fff",
-                              fontWeight: 700,
-                              padding: "5px 10px",
-                              fontSize: 13,
-                              cursor: "pointer",
-                            }}
-                          >
-                            Borrar
-                          </button>
-                        </form>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-              {demons.length === 0 && (
-                <tr>
-                  <td colSpan={5} style={{ padding: "20px 12px", color: "#6b7280", textAlign: "center" }}>
-                    No hay demonios.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <DemonDragList
+          initialDemons={demons.map((d) => ({
+            id: d.id,
+            position: d.position,
+            name: d.name,
+            publisherName: d.publisherName,
+            completionCount: d._count.completions,
+          }))}
+          deleteAction={deleteDemonAction}
+        />
       </section>
 
       {/* ── Completions ── */}
@@ -171,9 +91,7 @@ export default async function AdminPage() {
               </tr>
             </thead>
             <tbody>
-              {completions.map((c) => {
-                const deleteAction = deleteCompletionAction.bind(null, c.id);
-                return (
+              {completions.map((c) => (
                   <tr key={c.id} style={{ borderBottom: "1px dashed #e8e8e8" }}>
                     <td style={{ padding: "10px 12px", fontWeight: 600 }}>
                       #{c.demon.position} — {c.demon.name}
@@ -189,26 +107,13 @@ export default async function AdminPage() {
                       )}
                     </td>
                     <td style={{ padding: "10px 12px", textAlign: "right" }}>
-                      <form action={deleteAction}>
-                        <button
-                          type="submit"
-                          style={{
-                            border: "1px dashed #c0392b",
-                            background: "#e74c3c",
-                            color: "#fff",
-                            fontWeight: 700,
-                            padding: "5px 10px",
-                            fontSize: 13,
-                            cursor: "pointer",
-                          }}
-                        >
-                          Borrar
-                        </button>
-                      </form>
+                      <ConfirmDeleteBtn
+                        action={deleteCompletionAction.bind(null, c.id)}
+                        confirmMsg={`¿Borrar la completación de ${c.player.name} en ${c.demon.name}?`}
+                      />
                     </td>
                   </tr>
-                );
-              })}
+              ))}
               {completions.length === 0 && (
                 <tr>
                   <td colSpan={4} style={{ padding: "20px 12px", color: "#6b7280", textAlign: "center" }}>
@@ -238,9 +143,7 @@ export default async function AdminPage() {
               </tr>
             </thead>
             <tbody>
-              {progresses.map((p) => {
-                const deleteAction = deleteProgressAction.bind(null, p.id);
-                return (
+              {progresses.map((p) => (
                   <tr key={p.id} style={{ borderBottom: "1px dashed #e8e8e8" }}>
                     <td style={{ padding: "10px 12px", fontWeight: 600 }}>
                       #{p.demon.position} — {p.demon.name}
@@ -250,26 +153,13 @@ export default async function AdminPage() {
                       {p.percentage}%
                     </td>
                     <td style={{ padding: "10px 12px", textAlign: "right" }}>
-                      <form action={deleteAction}>
-                        <button
-                          type="submit"
-                          style={{
-                            border: "1px dashed #c0392b",
-                            background: "#e74c3c",
-                            color: "#fff",
-                            fontWeight: 700,
-                            padding: "5px 10px",
-                            fontSize: 13,
-                            cursor: "pointer",
-                          }}
-                        >
-                          Borrar
-                        </button>
-                      </form>
+                      <ConfirmDeleteBtn
+                        action={deleteProgressAction.bind(null, p.id)}
+                        confirmMsg={`¿Borrar el progreso de ${p.player.name} en ${p.demon.name}?`}
+                      />
                     </td>
                   </tr>
-                );
-              })}
+              ))}
               {progresses.length === 0 && (
                 <tr>
                   <td colSpan={4} style={{ padding: "20px 12px", color: "#6b7280", textAlign: "center" }}>

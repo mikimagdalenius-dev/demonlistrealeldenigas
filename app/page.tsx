@@ -9,25 +9,29 @@ export default async function DemonlistPage() {
     position: number;
     name: string;
     videoUrl: string;
+    thumbnailVideoUrl: string | null;
     publisherName: string;
     completions: { id: number; videoUrl: string; createdAt: Date; player: { name: string } }[];
   }[] = [];
+  let stats = { players: 0, completions: 0 };
 
   try {
-    demons = await prisma.demon.findMany({
-      orderBy: { position: "asc" },
-      include: {
-        completions: {
-          include: {
-            player: { select: { name: true } },
+    [demons, stats.players, stats.completions] = await Promise.all([
+      prisma.demon.findMany({
+        orderBy: { position: "asc" },
+        include: {
+          completions: {
+            include: { player: { select: { name: true } } },
+            orderBy: { createdAt: "asc" },
           },
-          orderBy: { createdAt: "asc" },
         },
-      },
-    });
+      }),
+      prisma.player.count(),
+      prisma.completion.count(),
+    ]);
   } catch {
     demons = [];
   }
 
-  return <DemonList demons={demons} />;
+  return <DemonList demons={demons} stats={{ demons: demons.length, ...stats }} />;
 }

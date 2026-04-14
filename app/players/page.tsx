@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { pointsFromDemon } from "@/lib/points";
 import { safeHref } from "@/lib/url";
+import { extractYouTubeId } from "@/lib/youtube";
 
 export const dynamic = "force-dynamic";
 
@@ -12,19 +13,8 @@ type PlayerWithStats = {
 };
 
 function youtubeThumbnail(videoUrl: string): string | null {
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
-    /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
-  ];
-  for (const p of patterns) {
-    const m = videoUrl.match(p);
-    if (m?.[1]) return `https://i.ytimg.com/vi/${m[1]}/hqdefault.jpg`;
-  }
-  try {
-    const v = new URL(videoUrl).searchParams.get("v");
-    if (v) return `https://i.ytimg.com/vi/${v}/hqdefault.jpg`;
-  } catch { /* ignore */ }
-  return null;
+  const id = extractYouTubeId(videoUrl);
+  return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null;
 }
 
 export default async function PlayersPage() {

@@ -1,9 +1,12 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { editDemonAction } from "../../actions";
+import { youtubeThumbnail } from "@/lib/youtube";
+
+type VideoOption = { label: string; videoUrl: string };
 
 type Props = {
   demonId: number;
@@ -11,6 +14,8 @@ type Props = {
   defaultVideoUrl: string;
   defaultPublisherName: string;
   defaultPosition: number;
+  defaultThumbnailVideoUrl: string;
+  allVideos: VideoOption[];
 };
 
 function SubmitButton() {
@@ -28,16 +33,19 @@ export function EditDemonForm({
   defaultVideoUrl,
   defaultPublisherName,
   defaultPosition,
+  defaultThumbnailVideoUrl,
+  allVideos,
 }: Props) {
   const router = useRouter();
   const [state, action] = useActionState(editDemonAction, { ok: false, message: "" });
+  const [selectedThumb, setSelectedThumb] = useState(defaultThumbnailVideoUrl || "");
 
   if (state.ok) {
     router.push("/admin");
   }
 
   return (
-    <div className="pc-form" style={{ maxWidth: 500, margin: "0 auto" }}>
+    <div className="pc-form" style={{ maxWidth: 560, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
         <button
           type="button"
@@ -54,6 +62,7 @@ export function EditDemonForm({
 
       <form action={action}>
         <input type="hidden" name="demonId" value={demonId} />
+        <input type="hidden" name="thumbnailVideoUrl" value={selectedThumb} />
 
         <div className="mb-4">
           <label htmlFor="name">Nombre</label>
@@ -74,6 +83,59 @@ export function EditDemonForm({
           <label htmlFor="position">Posición</label>
           <input id="position" name="position" type="number" min={1} defaultValue={defaultPosition} required />
         </div>
+
+        {allVideos.length > 0 && (
+          <div className="mb-5">
+            <label style={{ display: "block", marginBottom: 8 }}>Miniatura</label>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+              {/* Opción "automática" */}
+              <div
+                onClick={() => setSelectedThumb("")}
+                style={{
+                  cursor: "pointer",
+                  border: selectedThumb === "" ? "2px solid #3f82bc" : "2px solid transparent",
+                  outline: selectedThumb === "" ? "none" : "1px dashed #ccc",
+                  padding: 3,
+                  position: "relative",
+                }}
+              >
+                <img
+                  src={youtubeThumbnail(allVideos[0].videoUrl)}
+                  alt="Auto"
+                  style={{ width: 120, height: 68, objectFit: "cover", display: "block", opacity: 0.5 }}
+                />
+                <div style={{ fontSize: 10, textAlign: "center", marginTop: 3, color: "#666", fontWeight: 600 }}>
+                  AUTO
+                </div>
+              </div>
+
+              {allVideos.map((v, i) => {
+                const isSelected = selectedThumb === v.videoUrl;
+                return (
+                  <div
+                    key={i}
+                    onClick={() => setSelectedThumb(v.videoUrl)}
+                    style={{
+                      cursor: "pointer",
+                      border: isSelected ? "2px solid #3f82bc" : "2px solid transparent",
+                      outline: isSelected ? "none" : "1px dashed #ccc",
+                      padding: 3,
+                    }}
+                  >
+                    <img
+                      src={youtubeThumbnail(v.videoUrl)}
+                      alt={v.label}
+                      style={{ width: 120, height: 68, objectFit: "cover", display: "block" }}
+                    />
+                    <div style={{ fontSize: 10, textAlign: "center", marginTop: 3, color: "#333", maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {v.label}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <SubmitButton />
 

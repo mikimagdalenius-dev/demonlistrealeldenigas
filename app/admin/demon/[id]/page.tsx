@@ -18,8 +18,23 @@ export default async function EditDemonPage({
 
   if (!Number.isInteger(demonId) || demonId < 1) notFound();
 
-  const demon = await prisma.demon.findUnique({ where: { id: demonId } });
+  const demon = await prisma.demon.findUnique({
+    where: { id: demonId },
+    include: {
+      completions: {
+        include: { player: { select: { name: true } } },
+        orderBy: { createdAt: "asc" },
+      },
+    },
+  });
   if (!demon) notFound();
+
+  const allVideos = [
+    { label: `${demon.publisherName} (vídeo del demon)`, videoUrl: demon.videoUrl },
+    ...demon.completions
+      .filter((c) => c.videoUrl.trim().length > 0)
+      .map((c) => ({ label: c.player.name, videoUrl: c.videoUrl })),
+  ];
 
   return (
     <EditDemonForm
@@ -28,6 +43,8 @@ export default async function EditDemonPage({
       defaultVideoUrl={demon.videoUrl}
       defaultPublisherName={demon.publisherName}
       defaultPosition={demon.position}
+      defaultThumbnailVideoUrl={demon.thumbnailVideoUrl ?? ""}
+      allVideos={allVideos}
     />
   );
 }

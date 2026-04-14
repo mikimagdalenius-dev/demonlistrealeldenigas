@@ -77,21 +77,51 @@ export async function moveDemonAction(
     });
     if (!neighbor) return;
 
-    // Swap usando posición temporal para no violar unique constraint
     const total = await tx.demon.count();
     await tx.demon.update({ where: { id: demon.id }, data: { position: total + 9999 } });
-    await tx.demon.update({
-      where: { id: neighbor.id },
-      data: { position: demon.position },
-    });
-    await tx.demon.update({
-      where: { id: demon.id },
-      data: { position: targetPosition },
+    await tx.demon.update({ where: { id: neighbor.id }, data: { position: demon.position } });
+    await tx.demon.update({ where: { id: demon.id }, data: { position: targetPosition } });
+
+    await tx.positionHistory.createMany({
+      data: [
+        { demonId: demon.id, position: targetPosition },
+        { demonId: neighbor.id, position: demon.position },
+      ],
     });
   });
 
   revalidatePath("/");
   revalidatePath("/admin");
+}
+
+export async function reorderDemonsAction(orderedIds: number[]): Promise<void> {
+  if (!(await isAdminAuthed())) return;
+  if (!Array.isArray(orderedIds) || orderedIds.length === 0) return;
+
+  await prisma.$transaction(async (tx) => {
+    // Verificar que los IDs recibidos corresponden exactamente a los demons existentes
+    const existing = await tx.demon.findMany({ select: { id: true } });
+    const existingIds = new Set(existing.map((d) => d.id));
+    const valid =
+      orderedIds.length === existingIds.size &&
+      orderedIds.every((id) => existingIds.has(id)) &&
+      new Set(orderedIds).size === orderedIds.length;
+    if (!valid) throw new Error("orderedIds no coincide con los demons existentes");
+
+    const total = orderedIds.length;
+    for (let i = 0; i < orderedIds.length; i++) {
+      await tx.demon.update({ where: { id: orderedIds[i] }, data: { position: total + 1000 + i } });
+    }
+    for (let i = 0; i < orderedIds.length; i++) {
+      const newPos = i + 1;
+      await tx.demon.update({ where: { id: orderedIds[i] }, data: { position: newPos } });
+      await tx.positionHistory.create({ data: { demonId: orderedIds[i], position: newPos } });
+    }
+  });
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath("/players");
 }
 
 export async function editDemonAction(
@@ -108,6 +138,10 @@ export async function editDemonAction(
     const videoUrl = String(formData.get("videoUrl") ?? "").trim();
     const publisherName = String(formData.get("publisherName") ?? "").trim();
     const newPosition = Number(formData.get("position"));
+    const rawThumb = String(formData.get("thumbnailVideoUrl") ?? "").trim();
+    const thumbnailVideoUrl = rawThumb
+      ? (() => { try { const { protocol } = new URL(rawThumb); return (protocol === "http:" || protocol === "https:") ? rawThumb : null; } catch { return null; } })()
+      : null;
 
     if (!name || !videoUrl || !publisherName || !Number.isInteger(newPosition) || newPosition < 1) {
       return { ok: false, message: "Rellena todos los campos correctamente." };
@@ -143,12 +177,13 @@ export async function editDemonAction(
 
         await tx.demon.update({
           where: { id: demonId },
-          data: { name, videoUrl, publisherName, position: clampedPos },
+          data: { name, videoUrl, thumbnailVideoUrl, publisherName, position: clampedPos },
         });
+        await tx.positionHistory.create({ data: { demonId, position: clampedPos } });
       } else {
         await tx.demon.update({
           where: { id: demonId },
-          data: { name, videoUrl, publisherName },
+          data: { name, videoUrl, thumbnailVideoUrl, publisherName },
         });
       }
     });

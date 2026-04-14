@@ -8,16 +8,26 @@ datasource db {
 }
 
 model Demon {
-  id            Int          @id @default(autoincrement())
-  position      Int          @unique
-  name          String
-  videoUrl      String
-  publisherName String
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  submissions   Submission[]
-  completions   Completion[]
-  progresses    Progress[]
+  id                Int               @id @default(autoincrement())
+  position          Int               @unique
+  name              String
+  videoUrl          String
+  thumbnailVideoUrl String?
+  publisherName     String
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  submissions       Submission[]
+  completions       Completion[]
+  progresses        Progress[]
+  positionHistory   PositionHistory[]
+}
+
+model PositionHistory {
+  id        Int      @id @default(autoincrement())
+  demonId   Int
+  position  Int
+  changedAt DateTime @default(now())
+  demon     Demon    @relation(fields: [demonId], references: [id], onDelete: Cascade)
 }
 
 model Player {
