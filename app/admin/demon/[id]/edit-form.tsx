@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { editDemonAction } from "../../actions";
@@ -40,9 +40,10 @@ export function EditDemonForm({
   const [state, action] = useActionState(editDemonAction, { ok: false, message: "" });
   const [selectedThumb, setSelectedThumb] = useState(defaultThumbnailVideoUrl || "");
 
-  if (state.ok) {
-    router.push("/admin");
-  }
+  // Redirigir tras éxito dentro de un efecto para no navegar en render
+  useEffect(() => {
+    if (state.ok) router.push("/admin");
+  }, [state.ok, router]);
 
   return (
     <div className="pc-form" style={{ maxWidth: 560, margin: "0 auto" }}>

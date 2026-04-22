@@ -3,12 +3,22 @@ import { cookies } from "next/headers";
 const COOKIE_NAME = "admin_token";
 const COOKIE_MAX_AGE = 60 * 60 * 8; // 8 horas
 
+// Fail-closed: en producción, si falta la env var lanzamos en vez de caer en
+// un valor por defecto conocido. En dev dejamos el fallback para que `npm
+// run dev` siga funcionando sin .env.local.
+function requireEnv(key: string, devFallback: string): string {
+  const value = process.env[key];
+  if (value) return value;
+  if (process.env.NODE_ENV !== "production") return devFallback;
+  throw new Error(`Missing required env: ${key}`);
+}
+
 function secret(): string {
-  return process.env.ADMIN_SECRET ?? "dev-secret-change-me";
+  return requireEnv("ADMIN_SECRET", "dev-secret-change-me");
 }
 
 function password(): string {
-  return process.env.ADMIN_PASSWORD ?? "Flow";
+  return requireEnv("ADMIN_PASSWORD", "Flow");
 }
 
 export function checkAdminPassword(input: string): boolean {

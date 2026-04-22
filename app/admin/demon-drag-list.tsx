@@ -30,12 +30,14 @@ type Demon = {
 function SortableRow({
   demon,
   onDelete,
+  disabled,
 }: {
   demon: Demon;
   onDelete: (id: number) => void;
+  disabled: boolean;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: demon.id });
+    useSortable({ id: demon.id, disabled });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -117,6 +119,10 @@ export function DemonDragList({
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   function handleDragEnd(event: DragEndEvent) {
+    // Si hay un reorden/delete en vuelo, ignorar drags nuevos — evita que
+    // el índice local se desincronice del servidor al arrastrar rápido.
+    if (isPending) return;
+
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
@@ -165,6 +171,7 @@ export function DemonDragList({
                     key={demon.id}
                     demon={demon}
                     onDelete={handleDelete}
+                    disabled={isPending}
                   />
                 ))}
                 {demons.length === 0 && (
