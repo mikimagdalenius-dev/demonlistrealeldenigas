@@ -1,9 +1,9 @@
 import { ImageResponse } from "next/og";
 
-export const size = { width: 512, height: 512 };
+export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
-export default function Icon() {
+export default function AppleIcon() {
   return new ImageResponse(
     (
       <div
@@ -18,19 +18,18 @@ export default function Icon() {
       >
         <div
           style={{
-            width: 360,
-            height: 360,
-            borderRadius: 96,
+            width: 132,
+            height: 132,
+            borderRadius: 32,
             background:
               "linear-gradient(135deg, #8fc4ea 0%, #4a8ac9 55%, #3b5ea8 100%)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             color: "#0b1220",
-            fontSize: 220,
+            fontSize: 82,
             fontWeight: 900,
-            letterSpacing: -8,
-            boxShadow: "0 0 120px rgba(106,173,222,0.35)",
+            letterSpacing: -3,
           }}
         >
           D
