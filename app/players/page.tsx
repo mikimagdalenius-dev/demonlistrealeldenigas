@@ -35,7 +35,8 @@ export default async function PlayersPage() {
         },
       },
     });
-  } catch {
+  } catch (err) {
+    console.error("[PlayersPage] fallo cargando players", err);
     players = [];
   }
 

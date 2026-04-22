@@ -29,7 +29,8 @@ export default async function DemonlistPage() {
       prisma.player.count(),
       prisma.completion.count(),
     ]);
-  } catch {
+  } catch (err) {
+    console.error("[DemonlistPage] fallo cargando demons", err);
     demons = [];
   }
 

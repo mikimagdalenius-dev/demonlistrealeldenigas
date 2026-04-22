@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
+import { normalizeUrl } from "@/lib/url";
 
 type SubmitState = {
   ok: boolean;
@@ -45,20 +46,6 @@ function toPercentInt(value: FormDataEntryValue | null): number {
 
 const MAX_NAME_LEN = 100;
 const MAX_URL_LEN = 500;
-
-// Añade https:// si falta protocolo y valida que sea http/https (previene javascript: URLs)
-function normalizeUrl(raw: string): string {
-  const value = raw.trim();
-  if (!value) return value;
-  const withProtocol = /^https?:\/\//i.test(value) ? value : `https://${value}`;
-  try {
-    const { protocol } = new URL(withProtocol);
-    if (protocol !== "http:" && protocol !== "https:") throw new Error();
-    return withProtocol;
-  } catch {
-    throw new Error("URL inválida");
-  }
-}
 
 function resolvePlayerName(selectedPlayer: string, newPlayerName: string): string {
   return selectedPlayer === "__new__" ? newPlayerName.trim() : selectedPlayer.trim();
