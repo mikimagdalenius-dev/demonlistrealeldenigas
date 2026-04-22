@@ -1,12 +1,31 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
 
 type SubmitState = {
   ok: boolean;
   message: string;
 };
+
+// Busca jugador case-insensitive — "Miki", "miki" y "MIKI" son el mismo.
+// Si no existe lo crea preservando el casing del input.
+async function findOrCreatePlayer(
+  tx: Prisma.TransactionClient,
+  name: string,
+): Promise<{ id: number; name: string }> {
+  const existing = await tx.player.findFirst({
+    where: { name: { equals: name, mode: "insensitive" } },
+    select: { id: true, name: true },
+  });
+  if (existing) return existing;
+  return tx.player.create({
+    data: { name },
+    select: { id: true, name: true },
+  });
+}
 
 function toPositiveInt(value: FormDataEntryValue | null, fieldName: string): number {
   const parsed = Number(value);
@@ -47,6 +66,14 @@ function resolvePlayerName(selectedPlayer: string, newPlayerName: string): strin
 
 export async function submitDemon(_prev: SubmitState, formData: FormData): Promise<SubmitState> {
   try {
+    const limit = await rateLimit("submitDemon");
+    if (!limit.ok) {
+      return {
+        ok: false,
+        message: `Too many submissions. Try again in ${limit.retryInSec}s.`,
+      };
+    }
+
     const name = String(formData.get("name") ?? "").trim();
     const videoUrl = normalizeUrl(String(formData.get("videoUrl") ?? ""));
     const selectedPlayer = String(formData.get("playerName") ?? "").trim();
@@ -69,26 +96,27 @@ export async function submitDemon(_prev: SubmitState, formData: FormData): Promi
     }
 
     await prisma.$transaction(async (tx) => {
+      // Cap a total+1: si nos mandan una posición absurda (9999999) la
+      // metemos al final de la lista en vez de dejar un hueco gigante.
+      const total = await tx.demon.count();
+      const position = Math.min(provisionalPosition, total + 1);
+
       // Single UPDATE statement — PostgreSQL checks unique constraint after all rows are updated
       await tx.demon.updateMany({
-        where: { position: { gte: provisionalPosition } },
+        where: { position: { gte: position } },
         data: { position: { increment: 1 } },
       });
 
       const created = await tx.demon.create({
         data: {
-          position: provisionalPosition,
+          position,
           name,
           videoUrl,
           publisherName
         }
       });
 
-      const player = await tx.player.upsert({
-        where: { name: publisherName },
-        update: {},
-        create: { name: publisherName }
-      });
+      const player = await findOrCreatePlayer(tx, publisherName);
 
       await tx.completion.upsert({
         where: {
@@ -135,6 +163,14 @@ export async function submitDemon(_prev: SubmitState, formData: FormData): Promi
 
 export async function submitCompletion(_prev: SubmitState, formData: FormData): Promise<SubmitState> {
   try {
+    const limit = await rateLimit("submitCompletion");
+    if (!limit.ok) {
+      return {
+        ok: false,
+        message: `Too many submissions. Try again in ${limit.retryInSec}s.`,
+      };
+    }
+
     const demonId = Number(formData.get("existingDemonId"));
     const selectedPlayer = String(formData.get("playerName") ?? "").trim();
     const newPlayerName = String(formData.get("newPlayerName") ?? "").trim();
@@ -159,11 +195,7 @@ export async function submitCompletion(_prev: SubmitState, formData: FormData): 
       const demon = await tx.demon.findUnique({ where: { id: demonId }, select: { id: true } });
       if (!demon) throw new Error("Demon not found");
 
-      const player = await tx.player.upsert({
-        where: { name: playerName },
-        update: {},
-        create: { name: playerName }
-      });
+      const player = await findOrCreatePlayer(tx, playerName);
 
       await tx.completion.upsert({
         where: {
@@ -199,6 +231,14 @@ export async function submitCompletion(_prev: SubmitState, formData: FormData): 
 
 export async function submitProgress(_prev: SubmitState, formData: FormData): Promise<SubmitState> {
   try {
+    const limit = await rateLimit("submitProgress");
+    if (!limit.ok) {
+      return {
+        ok: false,
+        message: `Too many submissions. Try again in ${limit.retryInSec}s.`,
+      };
+    }
+
     const demonId = Number(formData.get("existingDemonId"));
     const selectedPlayer = String(formData.get("playerName") ?? "").trim();
     const newPlayerName = String(formData.get("newPlayerName") ?? "").trim();
@@ -217,11 +257,7 @@ export async function submitProgress(_prev: SubmitState, formData: FormData): Pr
       const demon = await tx.demon.findUnique({ where: { id: demonId }, select: { id: true } });
       if (!demon) throw new Error("Demon not found");
 
-      const player = await tx.player.upsert({
-        where: { name: playerName },
-        update: {},
-        create: { name: playerName }
-      });
+      const player = await findOrCreatePlayer(tx, playerName);
 
       await tx.progress.upsert({
         where: {
