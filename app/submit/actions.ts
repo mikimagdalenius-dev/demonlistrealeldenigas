@@ -88,11 +88,19 @@ export async function submitDemon(_prev: SubmitState, formData: FormData): Promi
       const total = await tx.demon.count();
       const position = Math.min(provisionalPosition, total + 1);
 
-      // Single UPDATE statement — PostgreSQL checks unique constraint after all rows are updated
-      await tx.demon.updateMany({
-        where: { position: { gte: position } },
-        data: { position: { increment: 1 } },
-      });
+      // Shift de las posiciones >= position en dos pasos. PG chequea
+      // `position @unique` por fila durante el UPDATE, así que un
+      // `increment 1` directo colisiona (fila con pos=P intenta ir a
+      // P+1, donde todavía vive otra fila). Truco: primero las negamos
+      // (rango disjunto al positivo), luego las devolvemos al valor
+      // final. Ambas statements son seguras porque los valores destino
+      // son únicos en todo momento.
+      await tx.$executeRaw`
+        UPDATE "Demon" SET "position" = -"position" WHERE "position" >= ${position}
+      `;
+      await tx.$executeRaw`
+        UPDATE "Demon" SET "position" = -"position" + 1 WHERE "position" < 0
+      `;
 
       const created = await tx.demon.create({
         data: {

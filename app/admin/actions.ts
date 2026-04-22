@@ -48,10 +48,14 @@ export async function deleteDemonAction(demonId: number): Promise<void> {
 
     await tx.demon.delete({ where: { id: demonId } });
 
-    await tx.demon.updateMany({
-      where: { position: { gt: demon.position } },
-      data: { position: { decrement: 1 } },
-    });
+    // Shift en dos pasos para evitar conflicto con `position @unique`.
+    // Ver comentario largo en submit/actions.ts submitDemon.
+    await tx.$executeRaw`
+      UPDATE "Demon" SET "position" = -"position" WHERE "position" > ${demon.position}
+    `;
+    await tx.$executeRaw`
+      UPDATE "Demon" SET "position" = -"position" - 1 WHERE "position" < 0
+    `;
   });
 
   revalidatePath("/");
@@ -190,16 +194,23 @@ export async function editDemonAction(
         // Mover el demonio a posición temporal para no violar unique constraint
         await tx.demon.update({ where: { id: demonId }, data: { position: total + 999 } });
 
+        // Shift del rango afectado en dos pasos (ver submit/actions.ts).
         if (clampedPos < oldPosition) {
-          await tx.demon.updateMany({
-            where: { position: { gte: clampedPos, lt: oldPosition } },
-            data: { position: { increment: 1 } },
-          });
+          await tx.$executeRaw`
+            UPDATE "Demon" SET "position" = -"position"
+            WHERE "position" >= ${clampedPos} AND "position" < ${oldPosition}
+          `;
+          await tx.$executeRaw`
+            UPDATE "Demon" SET "position" = -"position" + 1 WHERE "position" < 0
+          `;
         } else {
-          await tx.demon.updateMany({
-            where: { position: { gt: oldPosition, lte: clampedPos } },
-            data: { position: { decrement: 1 } },
-          });
+          await tx.$executeRaw`
+            UPDATE "Demon" SET "position" = -"position"
+            WHERE "position" > ${oldPosition} AND "position" <= ${clampedPos}
+          `;
+          await tx.$executeRaw`
+            UPDATE "Demon" SET "position" = -"position" - 1 WHERE "position" < 0
+          `;
         }
 
         await tx.demon.update({
