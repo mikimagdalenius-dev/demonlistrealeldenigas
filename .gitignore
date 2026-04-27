@@ -13,3 +13,5 @@ pnpm-debug.log*
 prisma/prisma/
 .vercel
 .env*.local
+*.tsbuildinfo
+.openclaw
