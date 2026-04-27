@@ -10,6 +10,7 @@ import {
   isAdminAuthed,
 } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
 import { normalizeUrl, tryNormalizeUrl } from "@/lib/url";
 
 const MAX_NAME_LEN = 100;
@@ -21,6 +22,12 @@ export async function loginAction(
   _prev: { error: string },
   formData: FormData
 ): Promise<{ error: string }> {
+  const limit = await rateLimit("adminLogin", 5, 5 * 60 * 1000);
+  if (!limit.ok) {
+    return {
+      error: `Demasiados intentos. Inténtalo de nuevo en ${limit.retryInSec}s.`,
+    };
+  }
   const password = String(formData.get("password") ?? "");
   if (!checkAdminPassword(password)) {
     return { error: "Contraseña incorrecta." };
