@@ -1,7 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { DemonList } from "./demon-list";
 
-export const dynamic = "force-dynamic";
+// ISR: cachea 60s. Las server actions de admin/submit invalidan con
+// revalidatePath("/") cuando hay cambios reales, así que el cache nunca se
+// queda viejo más de lo que tarde el siguiente refetch tras un cambio.
+export const revalidate = 60;
 
 export default async function DemonlistPage() {
   let demons: {

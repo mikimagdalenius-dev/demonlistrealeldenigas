@@ -3,7 +3,8 @@ import { pointsFromDemon } from "@/lib/points";
 import { safeHref } from "@/lib/url";
 import { extractYouTubeId } from "@/lib/youtube";
 
-export const dynamic = "force-dynamic";
+// ISR 60s; las acciones que afectan al ranking llaman revalidatePath("/players").
+export const revalidate = 60;
 
 type PlayerWithStats = {
   id: number;

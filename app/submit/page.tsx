@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { SubmitForm } from "./submit-form";
 
-export const dynamic = "force-dynamic";
+// ISR 60s — la lista de jugadores y demons se actualiza tras cualquier submit
+// (revalidatePath("/submit")), así que 60s es solo un techo en el peor caso.
+export const revalidate = 60;
 
 const defaultPlayers = ["Miki", "Isma", "Luksan", "Robert", "Adri", "Meri"];
 

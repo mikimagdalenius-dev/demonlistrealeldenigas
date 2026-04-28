@@ -5,7 +5,9 @@ import { safeHref } from "@/lib/url";
 import { youtubeEmbedUrl } from "@/lib/youtube";
 import Link from "next/link";
 
-export const dynamic = "force-dynamic";
+// ISR 60s. editDemon invalida "/" pero no "/demon/[id]" individual; aquí el
+// 60s actúa como ventana máxima de inconsistencia tras un edit.
+export const revalidate = 60;
 
 export default async function DemonPage({
   params,
