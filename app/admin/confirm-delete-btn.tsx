@@ -2,12 +2,14 @@
 
 import { useTransition } from "react";
 
+type Result = { ok: true } | { ok: false; error: string };
+
 export function ConfirmDeleteBtn({
   action,
   label = "Borrar",
   confirmMsg,
 }: {
-  action: () => Promise<void>;
+  action: () => Promise<Result>;
   label?: string;
   confirmMsg: string;
 }) {
@@ -15,7 +17,14 @@ export function ConfirmDeleteBtn({
 
   function handleClick() {
     if (!window.confirm(confirmMsg)) return;
-    startTransition(() => action());
+    startTransition(async () => {
+      const result = await action();
+      if (!result.ok) {
+        // Sin librería de toasts en el proyecto — alert es suficiente para
+        // un panel de admin con muy poco tráfico.
+        window.alert(result.error);
+      }
+    });
   }
 
   return (

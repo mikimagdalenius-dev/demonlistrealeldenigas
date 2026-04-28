@@ -3,6 +3,7 @@
 import {
   DndContext,
   closestCenter,
+  KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
@@ -10,6 +11,7 @@ import {
 } from "@dnd-kit/core";
 import {
   SortableContext,
+  sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
   arrayMove,
@@ -26,6 +28,8 @@ type Demon = {
   publisherName: string;
   completionCount: number;
 };
+
+type AdminResult = { ok: true } | { ok: false; error: string };
 
 function SortableRow({
   demon,
@@ -52,10 +56,17 @@ function SortableRow({
         {demon.position}
       </td>
       <td style={{ padding: "10px 0 10px 4px" }}>
-        <span
+        {/*
+          Render como <button> para que el KeyboardSensor de dnd-kit lo
+          enfoque con Tab. Tras enfocarlo, Espacio activa el drag y las
+          flechas mueven el item; Espacio otra vez confirma o Esc cancela.
+        */}
+        <button
+          type="button"
           {...attributes}
           {...listeners}
-          title="Arrastrar para reordenar"
+          aria-label={`Reordenar ${demon.name}`}
+          title="Arrastrar o pulsar Espacio + flechas para reordenar"
           style={{
             cursor: "grab",
             fontSize: 16,
@@ -63,10 +74,12 @@ function SortableRow({
             padding: "0 8px",
             userSelect: "none",
             display: "inline-block",
+            background: "transparent",
+            border: "none",
           }}
         >
           ⠿
-        </span>
+        </button>
       </td>
       <td style={{ padding: "10px 12px", fontWeight: 600 }}>{demon.name}</td>
       <td style={{ padding: "10px 12px", color: "#4b5563" }}>{demon.publisherName}</td>
@@ -111,12 +124,15 @@ export function DemonDragList({
   deleteAction,
 }: {
   initialDemons: Demon[];
-  deleteAction: (id: number) => Promise<void>;
+  deleteAction: (id: number) => Promise<AdminResult>;
 }) {
   const [demons, setDemons] = useState(initialDemons);
   const [isPending, startTransition] = useTransition();
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
 
   function handleDragEnd(event: DragEndEvent) {
     // Si hay un reorden/delete en vuelo, ignorar drags nuevos — evita que
@@ -126,6 +142,7 @@ export function DemonDragList({
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
+    const previous = demons;
     const oldIndex = demons.findIndex((d) => d.id === active.id);
     const newIndex = demons.findIndex((d) => d.id === over.id);
     const reordered = arrayMove(demons, oldIndex, newIndex).map((d, i) => ({
@@ -135,17 +152,27 @@ export function DemonDragList({
 
     setDemons(reordered);
     startTransition(async () => {
-      await reorderDemonsAction(reordered.map((d) => d.id));
+      const result = await reorderDemonsAction(reordered.map((d) => d.id));
+      if (!result.ok) {
+        // Revertir el orden local si el servidor rechazó el cambio (sesión
+        // expirada, fallo de DB, etc.).
+        setDemons(previous);
+        window.alert(result.error);
+      }
     });
   }
 
   function handleDelete(id: number) {
+    const previous = demons;
     startTransition(async () => {
-      await deleteAction(id);
-      setDemons((prev) => {
-        const filtered = prev.filter((d) => d.id !== id);
-        return filtered.map((d, i) => ({ ...d, position: i + 1 }));
-      });
+      const result = await deleteAction(id);
+      if (!result.ok) {
+        window.alert(result.error);
+        return;
+      }
+      setDemons(
+        previous.filter((d) => d.id !== id).map((d, i) => ({ ...d, position: i + 1 })),
+      );
     });
   }
 

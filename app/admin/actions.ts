@@ -41,111 +41,142 @@ export async function logoutAction(): Promise<void> {
 
 // ── Demons ────────────────────────────────────────────────────────────────────
 
-export async function deleteDemonAction(demonId: number): Promise<void> {
-  if (!(await isAdminAuthed())) return;
+// Tipo de retorno común para las acciones de admin que solo pueden devolver
+// éxito o un error (no necesitan mensaje de éxito). Si la cookie expira y la
+// auth falla, devolvemos { ok: false, error } en vez de un return silencioso
+// para que el cliente pueda mostrar feedback al usuario.
+type AdminResult = { ok: true } | { ok: false; error: string };
 
-  await prisma.$transaction(async (tx) => {
-    const demon = await tx.demon.findUnique({
-      where: { id: demonId },
-      select: { position: true },
+const UNAUTHORIZED: AdminResult = {
+  ok: false,
+  error: "Sesión de admin expirada o no iniciada.",
+};
+
+export async function deleteDemonAction(demonId: number): Promise<AdminResult> {
+  if (!(await isAdminAuthed())) return UNAUTHORIZED;
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const demon = await tx.demon.findUnique({
+        where: { id: demonId },
+        select: { position: true },
+      });
+      if (!demon) return;
+
+      await tx.demon.delete({ where: { id: demonId } });
+
+      // Shift en dos pasos para evitar conflicto con `position @unique`.
+      // Ver comentario largo en submit/actions.ts submitDemon.
+      await tx.$executeRaw`
+        UPDATE "Demon" SET "position" = -"position" WHERE "position" > ${demon.position}
+      `;
+      await tx.$executeRaw`
+        UPDATE "Demon" SET "position" = -"position" - 1 WHERE "position" < 0
+      `;
     });
-    if (!demon) return;
-
-    await tx.demon.delete({ where: { id: demonId } });
-
-    // Shift en dos pasos para evitar conflicto con `position @unique`.
-    // Ver comentario largo en submit/actions.ts submitDemon.
-    await tx.$executeRaw`
-      UPDATE "Demon" SET "position" = -"position" WHERE "position" > ${demon.position}
-    `;
-    await tx.$executeRaw`
-      UPDATE "Demon" SET "position" = -"position" - 1 WHERE "position" < 0
-    `;
-  });
+  } catch (err) {
+    console.error("[deleteDemonAction]", err);
+    return { ok: false, error: "Error al borrar el demonio." };
+  }
 
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/players");
+  return { ok: true };
 }
 
 export async function moveDemonAction(
   demonId: number,
   direction: "up" | "down"
-): Promise<void> {
-  if (!(await isAdminAuthed())) return;
+): Promise<AdminResult> {
+  if (!(await isAdminAuthed())) return UNAUTHORIZED;
 
-  await prisma.$transaction(async (tx) => {
-    const demon = await tx.demon.findUnique({
-      where: { id: demonId },
-      select: { id: true, position: true },
+  try {
+    await prisma.$transaction(async (tx) => {
+      const demon = await tx.demon.findUnique({
+        where: { id: demonId },
+        select: { id: true, position: true },
+      });
+      if (!demon) return;
+
+      const targetPosition =
+        direction === "up" ? demon.position - 1 : demon.position + 1;
+      if (targetPosition < 1) return;
+
+      const neighbor = await tx.demon.findUnique({
+        where: { position: targetPosition },
+        select: { id: true },
+      });
+      if (!neighbor) return;
+
+      const total = await tx.demon.count();
+      await tx.demon.update({ where: { id: demon.id }, data: { position: total + 9999 } });
+      await tx.demon.update({ where: { id: neighbor.id }, data: { position: demon.position } });
+      await tx.demon.update({ where: { id: demon.id }, data: { position: targetPosition } });
+
+      await tx.positionHistory.createMany({
+        data: [
+          { demonId: demon.id, position: targetPosition },
+          { demonId: neighbor.id, position: demon.position },
+        ],
+      });
     });
-    if (!demon) return;
-
-    const targetPosition =
-      direction === "up" ? demon.position - 1 : demon.position + 1;
-    if (targetPosition < 1) return;
-
-    const neighbor = await tx.demon.findUnique({
-      where: { position: targetPosition },
-      select: { id: true },
-    });
-    if (!neighbor) return;
-
-    const total = await tx.demon.count();
-    await tx.demon.update({ where: { id: demon.id }, data: { position: total + 9999 } });
-    await tx.demon.update({ where: { id: neighbor.id }, data: { position: demon.position } });
-    await tx.demon.update({ where: { id: demon.id }, data: { position: targetPosition } });
-
-    await tx.positionHistory.createMany({
-      data: [
-        { demonId: demon.id, position: targetPosition },
-        { demonId: neighbor.id, position: demon.position },
-      ],
-    });
-  });
+  } catch (err) {
+    console.error("[moveDemonAction]", err);
+    return { ok: false, error: "Error al mover el demonio." };
+  }
 
   revalidatePath("/");
   revalidatePath("/admin");
+  return { ok: true };
 }
 
-export async function reorderDemonsAction(orderedIds: number[]): Promise<void> {
-  if (!(await isAdminAuthed())) return;
-  if (!Array.isArray(orderedIds) || orderedIds.length === 0) return;
+export async function reorderDemonsAction(orderedIds: number[]): Promise<AdminResult> {
+  if (!(await isAdminAuthed())) return UNAUTHORIZED;
+  if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
+    return { ok: false, error: "Lista de demons vacía." };
+  }
 
-  await prisma.$transaction(async (tx) => {
-    // Verificar que los IDs recibidos corresponden exactamente a los demons existentes
-    const existing = await tx.demon.findMany({ select: { id: true } });
-    const existingIds = new Set(existing.map((d) => d.id));
-    const valid =
-      orderedIds.length === existingIds.size &&
-      orderedIds.every((id) => existingIds.has(id)) &&
-      new Set(orderedIds).size === orderedIds.length;
-    if (!valid) throw new Error("orderedIds no coincide con los demons existentes");
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Verificar que los IDs recibidos corresponden exactamente a los demons existentes
+      const existing = await tx.demon.findMany({ select: { id: true } });
+      const existingIds = new Set(existing.map((d) => d.id));
+      const valid =
+        orderedIds.length === existingIds.size &&
+        orderedIds.every((id) => existingIds.has(id)) &&
+        new Set(orderedIds).size === orderedIds.length;
+      if (!valid) throw new Error("orderedIds no coincide con los demons existentes");
 
-    // Un único UPDATE con CASE. PostgreSQL valida el unique de `position`
-    // al final del statement, por eso no hace falta pasar por posiciones
-    // temporales: siempre que el estado final sea una permutación válida
-    // de 1..N, el swap/reorder pasa el check.
-    const caseClauses = Prisma.join(
-      orderedIds.map(
-        (id, i) => Prisma.sql`WHEN ${id} THEN ${i + 1}`,
-      ),
-      " ",
-    );
-    await tx.$executeRaw(Prisma.sql`
-      UPDATE "Demon"
-      SET "position" = CASE "id" ${caseClauses} END
-      WHERE "id" IN (${Prisma.join(orderedIds)})
-    `);
+      // Un único UPDATE con CASE. PostgreSQL valida el unique de `position`
+      // al final del statement, por eso no hace falta pasar por posiciones
+      // temporales: siempre que el estado final sea una permutación válida
+      // de 1..N, el swap/reorder pasa el check.
+      const caseClauses = Prisma.join(
+        orderedIds.map(
+          (id, i) => Prisma.sql`WHEN ${id} THEN ${i + 1}`,
+        ),
+        " ",
+      );
+      await tx.$executeRaw(Prisma.sql`
+        UPDATE "Demon"
+        SET "position" = CASE "id" ${caseClauses} END
+        WHERE "id" IN (${Prisma.join(orderedIds)})
+      `);
 
-    await tx.positionHistory.createMany({
-      data: orderedIds.map((id, i) => ({ demonId: id, position: i + 1 })),
+      await tx.positionHistory.createMany({
+        data: orderedIds.map((id, i) => ({ demonId: id, position: i + 1 })),
+      });
     });
-  });
+  } catch (err) {
+    console.error("[reorderDemonsAction]", err);
+    return { ok: false, error: "Error al reordenar los demonios." };
+  }
 
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/players");
+  return { ok: true };
 }
 
 export async function editDemonAction(
@@ -244,19 +275,31 @@ export async function editDemonAction(
 
 // ── Completions ───────────────────────────────────────────────────────────────
 
-export async function deleteCompletionAction(completionId: number): Promise<void> {
-  if (!(await isAdminAuthed())) return;
-  await prisma.completion.delete({ where: { id: completionId } });
+export async function deleteCompletionAction(completionId: number): Promise<AdminResult> {
+  if (!(await isAdminAuthed())) return UNAUTHORIZED;
+  try {
+    await prisma.completion.delete({ where: { id: completionId } });
+  } catch (err) {
+    console.error("[deleteCompletionAction]", err);
+    return { ok: false, error: "Error al borrar la completación." };
+  }
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/players");
+  return { ok: true };
 }
 
 // ── Progress ──────────────────────────────────────────────────────────────────
 
-export async function deleteProgressAction(progressId: number): Promise<void> {
-  if (!(await isAdminAuthed())) return;
-  await prisma.progress.delete({ where: { id: progressId } });
+export async function deleteProgressAction(progressId: number): Promise<AdminResult> {
+  if (!(await isAdminAuthed())) return UNAUTHORIZED;
+  try {
+    await prisma.progress.delete({ where: { id: progressId } });
+  } catch (err) {
+    console.error("[deleteProgressAction]", err);
+    return { ok: false, error: "Error al borrar el progreso." };
+  }
   revalidatePath("/admin");
   revalidatePath("/players");
+  return { ok: true };
 }

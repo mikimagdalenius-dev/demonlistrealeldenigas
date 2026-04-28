@@ -15,10 +15,22 @@ export async function rateLimit(
   limit = 5,
   windowMs = 5 * 60 * 1000,
 ): Promise<RateLimitResult> {
+  // En Vercel, x-real-ip lo setea el edge con la IP real del cliente y NO es
+  // spoofeable. x-forwarded-for sí lo es: un atacante puede inyectar
+  // "X-Forwarded-For: 1.2.3.4" en su request, Vercel lo apenda detrás del
+  // IP real, y el primer elemento del split es el spoofeado. Por eso
+  // preferimos x-real-ip; solo caemos a XFF tomando el ÚLTIMO elemento (el
+  // más cercano al edge) si x-real-ip no está disponible.
   const h = await headers();
-  const xff = h.get("x-forwarded-for") ?? "";
-  const ip =
-    xff.split(",")[0].trim() || h.get("x-real-ip") || "unknown";
+  const real = h.get("x-real-ip");
+  let ip: string;
+  if (real) {
+    ip = real.trim();
+  } else {
+    const xff = h.get("x-forwarded-for") ?? "";
+    const parts = xff.split(",").map((s) => s.trim()).filter(Boolean);
+    ip = parts.length > 0 ? parts[parts.length - 1] : "unknown";
+  }
   const key = `${action}:${ip}`;
 
   const now = Date.now();
