@@ -5,6 +5,13 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
 import { normalizeUrl } from "@/lib/url";
+import {
+  MAX_NAME_LEN,
+  MAX_URL_LEN,
+  resolvePlayerName,
+  toPercentInt,
+  toPositiveInt,
+} from "@/lib/validation";
 
 type SubmitState = {
   ok: boolean;
@@ -26,29 +33,6 @@ async function findOrCreatePlayer(
     data: { name },
     select: { id: true, name: true },
   });
-}
-
-function toPositiveInt(value: FormDataEntryValue | null, fieldName: string): number {
-  const parsed = Number(value);
-  if (!Number.isInteger(parsed) || parsed < 1) {
-    throw new Error(`${fieldName} must be a positive integer`);
-  }
-  return parsed;
-}
-
-function toPercentInt(value: FormDataEntryValue | null): number {
-  const parsed = Number(value);
-  if (!Number.isInteger(parsed) || parsed < 1 || parsed > 100) {
-    throw new Error("Percentage must be between 1 and 100");
-  }
-  return parsed;
-}
-
-const MAX_NAME_LEN = 100;
-const MAX_URL_LEN = 500;
-
-function resolvePlayerName(selectedPlayer: string, newPlayerName: string): string {
-  return selectedPlayer === "__new__" ? newPlayerName.trim() : selectedPlayer.trim();
 }
 
 export async function submitDemon(_prev: SubmitState, formData: FormData): Promise<SubmitState> {

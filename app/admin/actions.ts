@@ -12,9 +12,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
 import { normalizeUrl, tryNormalizeUrl } from "@/lib/url";
-
-const MAX_NAME_LEN = 100;
-const MAX_URL_LEN = 500;
+import { MAX_NAME_LEN, MAX_URL_LEN } from "@/lib/validation";
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
