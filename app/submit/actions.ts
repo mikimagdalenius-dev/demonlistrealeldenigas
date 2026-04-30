@@ -136,8 +136,7 @@ export async function submitDemon(_prev: SubmitState, formData: FormData): Promi
     return { ok: true, message: "Demon submitted correctly." };
   } catch (err) {
     console.error("[submitDemon]", err);
-    const detail = err instanceof Error ? err.message : String(err);
-    return { ok: false, message: `Error al enviar: ${detail}` };
+    return { ok: false, message: "Error al enviar. Inténtalo de nuevo." };
   }
 }
 
@@ -205,8 +204,7 @@ export async function submitCompletion(_prev: SubmitState, formData: FormData): 
     return { ok: true, message: "Completion submitted correctly." };
   } catch (err) {
     console.error("[submitCompletion]", err);
-    const detail = err instanceof Error ? err.message : String(err);
-    return { ok: false, message: `Error al enviar completion: ${detail}` };
+    return { ok: false, message: "Error al enviar completion. Inténtalo de nuevo." };
   }
 }
 
@@ -262,7 +260,6 @@ export async function submitProgress(_prev: SubmitState, formData: FormData): Pr
     return { ok: true, message: "Progress submitted correctly." };
   } catch (err) {
     console.error("[submitProgress]", err);
-    const detail = err instanceof Error ? err.message : String(err);
-    return { ok: false, message: `Error al enviar progress: ${detail}` };
+    return { ok: false, message: "Error al enviar progress. Inténtalo de nuevo." };
   }
 }

@@ -19,6 +19,11 @@ export function safeHref(url: string): string {
 export function normalizeUrl(raw: string): string {
   const value = raw.trim();
   if (!value) return value;
+  // Rechaza cualquier esquema explícito que no sea http/https (file:, data:,
+  // javascript:, etc.) antes de prefijar https://.
+  if (/^[a-z][a-z0-9+.-]*:/i.test(value) && !/^https?:\/\//i.test(value)) {
+    throw new Error("URL inválida");
+  }
   const withProtocol = /^https?:\/\//i.test(value) ? value : `https://${value}`;
   try {
     const { protocol } = new URL(withProtocol);

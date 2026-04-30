@@ -18,7 +18,7 @@ function secret(): string {
 }
 
 function password(): string {
-  return requireEnv("ADMIN_PASSWORD", "Flow");
+  return requireEnv("ADMIN_PASSWORD", "dev-password-change-me");
 }
 
 export function checkAdminPassword(input: string): boolean {
