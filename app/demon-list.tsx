@@ -98,6 +98,7 @@ export function DemonList({ demons, stats }: { demons: Demon[]; stats: { demons:
               <article key={demon.id} className="pc-entry is-top">
                 <div>
                   <CatNum n={demon.position} />
+                  <span className="pc-code" aria-hidden="true"><i /><i /><i /><i /><i /></span>
                   {title}
                   {meta}
                   <div className="pc-entry-top-meta">

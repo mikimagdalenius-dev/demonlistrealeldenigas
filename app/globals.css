@@ -10,9 +10,9 @@
   --panel: #101010;
   --raise: #171717;
   --ink: #ecebe6;
-  --ink-2: #a9a8a3;
+  --ink-2: #bdbcb6;
   --ink-3: #8d8c88;
-  --rule: rgba(236, 235, 230, 0.16);
+  --rule: rgba(236, 235, 230, 0.2);
   --rule-strong: rgba(236, 235, 230, 0.42);
   --red: #e0352b;
   --blue: #5b8cff;
@@ -262,7 +262,7 @@ a:hover {
 
 .pc-entry:hover,
 .pc-entry:focus-within {
-  border-color: var(--rule-strong);
+  border-color: var(--ink);
 }
 
 .pc-entry-num {
@@ -293,14 +293,14 @@ a:hover {
   object-fit: cover;
   background: var(--raise);
   border: 1px solid var(--rule);
-  /* Firma: monocromo en reposo, se "decodifica" a color al enfocar */
-  filter: grayscale(1) brightness(0.78) contrast(1.05);
+  /* Firma: color contenido en reposo, a tope al enfocar */
+  filter: saturate(0.85) brightness(0.86);
   transition: filter 0.4s var(--ease-out);
 }
 
 @media (hover: none) {
   .pc-thumb {
-    filter: grayscale(1) brightness(0.88);
+    filter: none;
   }
 }
 
@@ -308,7 +308,7 @@ a:hover {
 .pc-entry:focus-within .pc-thumb,
 .pc-thumb-link:hover .pc-thumb,
 .pc-thumb-link:focus-visible .pc-thumb {
-  filter: none;
+  filter: saturate(1.15) brightness(1.04);
 }
 
 .pc-entry-body {
@@ -380,7 +380,7 @@ a:hover {
 }
 
 .pc-readout i.on {
-  background: var(--ink-3);
+  background: var(--ink);
   transition: background-color 0.4s var(--ease-out);
 }
 
@@ -407,6 +407,21 @@ a:hover {
   gap: 32px;
   padding: 28px;
   border-color: var(--rule-strong);
+}
+
+.pc-entry.is-top .pc-entry-num,
+.pc-entry.is-top:hover .pc-entry-num {
+  color: var(--red);
+}
+
+.pc-entry.is-top .pc-code {
+  display: flex;
+  margin-top: 18px;
+}
+
+.pc-entry.is-top .pc-code i {
+  width: 28px;
+  height: 10px;
 }
 
 .pc-entry.is-top .pc-entry-num {

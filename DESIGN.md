@@ -6,9 +6,9 @@ colors:
   panel: "#101010"
   raise: "#171717"
   ink: "#ecebe6"
-  ink-2: "#a9a8a3"
+  ink-2: "#bdbcb6"
   ink-3: "#8d8c88"
-  rule: "rgba(236, 235, 230, 0.16)"
+  rule: "rgba(236, 235, 230, 0.2)"
   rule-strong: "rgba(236, 235, 230, 0.42)"
   signal-red: "#e0352b"
   link-blue: "#5b8cff"
@@ -119,7 +119,7 @@ The list is a record label's back catalogue printed on matte black. Every demon 
 
 Density is moderate and list-first. Rows are full-width hairline boxes stacked 12px apart; the #01 entry gets a featured sleeve with a 128px numeral and a large thumbnail. Labels speak in wide tracked caps, the "engraved" voice of the catalogue; body text stays plain sentence-case Archivo at 15px.
 
-Colour is a code, not a decoration. A five-block industrial strip (grey, blue, yellow, red, white) under the wordmark is the mark, and each of those colours has one job across the whole app. The signature move is **decoding**: thumbnails sit monochrome and dimmed at rest, and the hovered or focused entry resolves to full colour while its numeral turns red and its ten-cell points readout lights red.
+Colour is a code, not a decoration. A five-block industrial strip (grey, blue, yellow, red, white) under the wordmark is the mark, and each of those colours has one job across the whole app. The signature move is **decoding**: thumbnails sit in slightly muted colour at rest, and the hovered or focused entry resolves to full, saturated colour with a white border while its numeral turns red and its ten-cell points readout (white at rest) lights red. The #01 entry keeps its numeral red at all times and carries the five-block code strip.
 
 **Key Characteristics:**
 - Matte black ground, bone-white ink, 1px hairline rules, zero radius, zero shadow.
@@ -216,7 +216,7 @@ Outlined, engraved, inverted on hover.
 - **Container:** Panel fill, 1px hairline, square; border steps to strong hairline on hover/focus-within (400ms ease-out).
 - **Contents:** Headline numeral, 16:9 thumbnail with 1px hairline, title-caps name, 13px meta, points figure, ten-cell readout, proofs control.
 - **Readout:** Ten 9px squares, 3px apart; unearned cells #2a2a2a, earned cells ink-3, earned cells turn red on decode.
-- **Decoding:** Thumbnail filter `grayscale(1) brightness(0.78) contrast(1.05)` at rest (0.88 brightness on touch devices), `none` on hover/focus-within; numeral ink to red. 400ms `cubic-bezier(0.16, 1, 0.3, 1)`; nothing transitions under reduced motion.
+- **Decoding:** Thumbnail filter `saturate(0.85) brightness(0.86)` at rest (`none` on touch devices), `saturate(1.15) brightness(1.04)` on hover/focus-within; numeral ink to red. 400ms `cubic-bezier(0.16, 1, 0.3, 1)`; nothing transitions under reduced motion.
 - **Featured (#01):** Strong hairline, 28px padding, display numeral, larger thumbnail on the right.
 
 ### Inputs / Fields
@@ -239,7 +239,7 @@ Outlined, engraved, inverted on hover.
 
 ### Do:
 - **Do** make the position numeral the largest, lightest type on every entry (200 weight, 125% width).
-- **Do** keep thumbnails monochrome at rest and decode them to colour with a red numeral and lit readout on hover and focus-within.
+- **Do** keep thumbnails slightly muted at rest and push them to full colour with a red numeral and lit readout on hover and focus-within.
 - **Do** mark active and selected state with a solid red edge block flush to the right edge (10px tabs, 14px primary button).
 - **Do** give emphasis with the 42% hairline or a ground-to-panel-to-raise tone step.
 - **Do** set every label, button and header in expanded tracked caps (125% width, 0.16em to 0.28em).
