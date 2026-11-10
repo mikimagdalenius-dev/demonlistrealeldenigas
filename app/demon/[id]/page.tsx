@@ -58,7 +58,7 @@ export default async function DemonPage({
       </Link>
 
       {/* Header */}
-      <article className="pc-detail-head">
+      <article className={`pc-detail-head ${demon.position === 1 ? "is-lead" : ""}`}>
         <div>
           <CatNum n={demon.position} />
           <h1 className="pc-demon-title" style={{ marginBottom: 0 }}>{demon.name}</h1>

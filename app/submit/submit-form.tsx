@@ -98,7 +98,7 @@ export function SubmitForm({ players, demons }: SubmitFormProps) {
   const [progressState, progressAction] = useActionState(submitProgress, initialSubmitState);
 
   return (
-    <div className="pc-form">
+    <div className="pc-form pc-form-sheet">
       <div className="pc-submit-tabs mb-4">
         <button
           type="button"

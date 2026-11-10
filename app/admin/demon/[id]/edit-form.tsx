@@ -46,14 +46,17 @@ export function EditDemonForm({
   }, [state.ok, router]);
 
   return (
-    <div className="pc-form" style={{ maxWidth: 640, margin: "0 auto" }}>
+    <div className="pc-form pc-form-sheet" style={{ maxWidth: 760, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
         <button
           type="button"
           className="pc-btn pc-btn-secondary pc-btn-small"
           onClick={() => router.push("/admin")}
         >
-          ← Back
+          <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true">
+            <path d="M13 5H1M5 1 1 5l4 4" />
+          </svg>
+          Back
         </button>
         <h1 className="pc-demon-title">Edit demon</h1>
       </div>
