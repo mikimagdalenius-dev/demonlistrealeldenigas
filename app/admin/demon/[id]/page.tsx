@@ -30,7 +30,7 @@ export default async function EditDemonPage({
   if (!demon) notFound();
 
   const allVideos = [
-    { label: `${demon.publisherName} (vídeo del demon)`, videoUrl: demon.videoUrl },
+    { label: `${demon.publisherName} (demon video)`, videoUrl: demon.videoUrl },
     ...demon.completions
       .filter((c) => c.videoUrl.trim().length > 0)
       .map((c) => ({ label: c.player.name, videoUrl: c.videoUrl })),

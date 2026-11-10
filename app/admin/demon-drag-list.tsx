@@ -65,8 +65,8 @@ function SortableRow({
           type="button"
           {...attributes}
           {...listeners}
-          aria-label={`Reordenar ${demon.name}`}
-          title="Arrastrar o pulsar Espacio + flechas para reordenar"
+          aria-label={`Reorder ${demon.name}`}
+          title="Drag, or press Space + arrow keys to reorder"
           className="pc-drag-handle"
         >
           <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor" aria-hidden="true">
@@ -87,17 +87,17 @@ function SortableRow({
             href={`/admin/demon/${demon.id}`}
             className="pc-btn pc-btn-secondary pc-btn-small"
           >
-            Editar
+            Edit
           </Link>
           <button
             onClick={() => {
-              if (window.confirm(`¿Borrar "${demon.name}" y todas sus completaciones?`)) {
+              if (window.confirm(`Delete "${demon.name}" and all its completions?`)) {
                 onDelete(demon.id);
               }
             }}
             className="pc-btn pc-btn-danger pc-btn-small"
           >
-            Borrar
+            Delete
           </button>
         </div>
       </td>
@@ -170,10 +170,10 @@ export function DemonDragList({
             <tr>
               <th style={{ width: 50 }}>#</th>
               <th style={{ width: 36 }} />
-              <th>Nombre</th>
+              <th>Name</th>
               <th>Publisher</th>
-              <th className="is-center" style={{ width: 90 }}>Completes</th>
-              <th className="is-right" style={{ width: 180 }}>Acciones</th>
+              <th className="is-center" style={{ width: 90 }}>Completions</th>
+              <th className="is-right" style={{ width: 180 }}>Actions</th>
             </tr>
           </thead>
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -190,7 +190,7 @@ export function DemonDragList({
                 {demons.length === 0 && (
                   <tr>
                     <td colSpan={6} className="pc-empty">
-                      No hay demonios.
+                      No demons.
                     </td>
                   </tr>
                 )}

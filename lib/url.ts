@@ -13,7 +13,7 @@ export function safeHref(url: string): string {
 
 /**
  * Trimea, añade https:// si falta protocolo y valida http/https.
- * Empty string in → empty string out (no lanza). Throws "URL inválida"
+ * Empty string in → empty string out (no lanza). Throws "Invalid URL"
  * si el valor no está vacío pero no se puede normalizar.
  */
 export function normalizeUrl(raw: string): string {
@@ -22,7 +22,7 @@ export function normalizeUrl(raw: string): string {
   // Rechaza cualquier esquema explícito que no sea http/https (file:, data:,
   // javascript:, etc.) antes de prefijar https://.
   if (/^[a-z][a-z0-9+.-]*:/i.test(value) && !/^https?:\/\//i.test(value)) {
-    throw new Error("URL inválida");
+    throw new Error("Invalid URL");
   }
   const withProtocol = /^https?:\/\//i.test(value) ? value : `https://${value}`;
   try {
@@ -30,7 +30,7 @@ export function normalizeUrl(raw: string): string {
     if (protocol !== "http:" && protocol !== "https:") throw new Error();
     return withProtocol;
   } catch {
-    throw new Error("URL inválida");
+    throw new Error("Invalid URL");
   }
 }
 

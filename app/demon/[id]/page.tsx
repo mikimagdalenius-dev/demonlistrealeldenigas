@@ -54,7 +54,7 @@ export default async function DemonPage({
         <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true">
           <path d="M13 5H1M5 1 1 5l4 4" />
         </svg>
-        Volver a la lista
+        Back to the list
       </Link>
 
       {/* Header */}
@@ -88,7 +88,7 @@ export default async function DemonPage({
           {!embedUrl && demon.videoUrl && (
             <div style={{ marginTop: 24 }}>
               <a href={safeHref(demon.videoUrl)} target="_blank" rel="noreferrer" className="pc-btn">
-                Ver vídeo
+                Watch video
               </a>
             </div>
           )}
@@ -97,7 +97,7 @@ export default async function DemonPage({
         {embedUrl && (
           <iframe
             src={embedUrl}
-            title={`Vídeo de ${demon.name}`}
+            title={`${demon.name} video`}
             className="pc-embed"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
@@ -119,8 +119,8 @@ export default async function DemonPage({
               <table className="pc-table">
                 <thead>
                   <tr>
-                    <th>Jugador</th>
-                    <th className="is-right">Vídeo</th>
+                    <th>Player</th>
+                    <th className="is-right">Video</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -157,7 +157,7 @@ export default async function DemonPage({
               <table className="pc-table">
                 <thead>
                   <tr>
-                    <th>Jugador</th>
+                    <th>Player</th>
                     <th className="is-right">%</th>
                   </tr>
                 </thead>
@@ -192,10 +192,10 @@ export default async function DemonPage({
                 <div key={h.id} className="pc-history-row">
                   <span className="pc-history-pos">#{h.position}</span>
                   <span className={isFirst ? "pc-flat" : diff < 0 ? "pc-up" : diff > 0 ? "pc-down" : "pc-flat"}>
-                    {isFirst ? "debut" : diff < 0 ? `sube ${Math.abs(diff)}` : diff > 0 ? `baja ${diff}` : "sin cambio"}
+                    {isFirst ? "debut" : diff < 0 ? `up ${Math.abs(diff)}` : diff > 0 ? `down ${diff}` : "no change"}
                   </span>
                   <span className="pc-caps pc-num" style={{ marginLeft: "auto" }}>
-                    {new Date(h.changedAt).toLocaleDateString("es-ES", {
+                    {new Date(h.changedAt).toLocaleDateString("en-GB", {
                       day: "2-digit", month: "short", year: "numeric",
                     })}
                   </span>

@@ -89,6 +89,12 @@ export default async function PlayersPage() {
               <div className="pc-demon-title">{player.name}</div>
               <div className="pc-demon-meta">
                 completed demons: <strong className="pc-num">{player.completedDemons}</strong>
+                {player.hardest && (
+                  <>
+                    <span className="pc-meta-sep" aria-hidden="true" />
+                    hardest: <strong>#{player.hardest.demon.position} {player.hardest.demon.name}</strong>
+                  </>
+                )}
               </div>
 
               <details className="pc-top5">

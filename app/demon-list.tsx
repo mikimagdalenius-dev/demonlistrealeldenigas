@@ -6,6 +6,7 @@ import { pointsFromDemon } from "@/lib/points";
 import { safeHref } from "@/lib/url";
 import { youtubeThumbnail } from "@/lib/youtube";
 import { CatNum, Points, Readout } from "@/components/catalog";
+import { recentMove } from "@/lib/position";
 
 type Demon = {
   id: number;
@@ -15,7 +16,17 @@ type Demon = {
   thumbnailVideoUrl: string | null;
   publisherName: string;
   completions: { id: number; videoUrl: string; createdAt: Date | string; player: { name: string } }[];
+  positionHistory: { position: number; changedAt: Date | string }[];
 };
+
+function Move({ diff }: { diff: number | null }) {
+  if (diff === null) return null;
+  return (
+    <span className={`pc-move ${diff > 0 ? "is-up" : "is-down"}`} title={diff > 0 ? `Up ${diff}` : `Down ${-diff}`}>
+      {diff > 0 ? `+${diff}` : `−${-diff}`}
+    </span>
+  );
+}
 
 // ── Componente principal ──────────────────────────────────────────────────────
 
@@ -36,8 +47,8 @@ export function DemonList({ demons, stats }: { demons: Demon[]; stats: { demons:
 
       <input
         type="search"
-        placeholder="Buscar demon..."
-        aria-label="Buscar demon"
+        placeholder="Search demon..."
+        aria-label="Search demon"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         className="pc-search-input"
@@ -57,16 +68,18 @@ export function DemonList({ demons, stats }: { demons: Demon[]; stats: { demons:
           const points = pointsFromDemon(demon.position);
           const isTop = demon.position === 1 && !query.trim();
 
-          // Miniatura — clic abre el vídeo del primer run
+          const move = recentMove(demon.positionHistory);
+
+          // Miniatura: forma parte de la fila clicable (los vídeos van en "Video proofs")
           const thumb = (
-            <a href={safeHref(runs[0].videoUrl)} target="_blank" rel="noreferrer" className="pc-thumb-link" tabIndex={-1}>
-              <img className="pc-thumb" src={youtubeThumbnail(demon.thumbnailVideoUrl || runs[0].videoUrl)} alt={demon.name} loading={isTop ? "eager" : "lazy"} />
-            </a>
+            <div className="pc-thumb-link">
+              <img className="pc-thumb" src={youtubeThumbnail(demon.thumbnailVideoUrl || runs[0].videoUrl)} alt="" loading={isTop ? "eager" : "lazy"} />
+            </div>
           );
 
           const title = (
             <div className="pc-demon-title">
-              <Link href={`/demon/${demon.id}`} className="pc-demon-name-link">
+              <Link href={`/demon/${demon.id}`} className="pc-demon-name-link pc-row-link">
                 {demon.name}
               </Link>
             </div>
@@ -97,7 +110,7 @@ export function DemonList({ demons, stats }: { demons: Demon[]; stats: { demons:
             return (
               <article key={demon.id} className="pc-entry is-top">
                 <div>
-                  <CatNum n={demon.position} />
+                  <span className="pc-num-wrap"><CatNum n={demon.position} /><Move diff={move} /></span>
                   <span className="pc-code" aria-hidden="true"><i /><i /><i /><i /><i /></span>
                   {title}
                   {meta}
@@ -114,7 +127,7 @@ export function DemonList({ demons, stats }: { demons: Demon[]; stats: { demons:
 
           return (
             <article key={demon.id} className="pc-entry">
-              <CatNum n={demon.position} />
+              <span className="pc-num-wrap"><CatNum n={demon.position} /><Move diff={move} /></span>
               {thumb}
               <div className="pc-entry-body">
                 {title}
@@ -131,7 +144,7 @@ export function DemonList({ demons, stats }: { demons: Demon[]; stats: { demons:
 
         {filtered.length === 0 && demons.length > 0 && (
           <div className="pc-card pc-empty">
-            No hay demonios que coincidan con &ldquo;{query}&rdquo;.
+            No demons match &ldquo;{query}&rdquo;.
           </div>
         )}
 

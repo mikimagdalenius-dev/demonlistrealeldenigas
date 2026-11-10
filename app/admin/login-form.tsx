@@ -8,7 +8,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="pc-btn" style={{ width: "100%", justifyContent: "center" }} disabled={pending}>
-      {pending ? "Comprobando..." : "Entrar"}
+      {pending ? "Checking..." : "Log in"}
     </button>
   );
 }
@@ -24,7 +24,7 @@ export function LoginForm() {
 
       <form action={action}>
         <div className="mb-4">
-          <label htmlFor="password">Contraseña</label>
+          <label htmlFor="password">Password</label>
           <input
             id="password"
             name="password"

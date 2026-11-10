@@ -6,7 +6,7 @@ type Result = { ok: true } | { ok: false; error: string };
 
 export function ConfirmDeleteBtn({
   action,
-  label = "Borrar",
+  label = "Delete",
   confirmMsg,
 }: {
   action: () => Promise<Result>;

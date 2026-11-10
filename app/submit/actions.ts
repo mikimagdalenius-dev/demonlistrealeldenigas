@@ -136,7 +136,7 @@ export async function submitDemon(_prev: SubmitState, formData: FormData): Promi
     return { ok: true, message: "Demon submitted correctly." };
   } catch (err) {
     console.error("[submitDemon]", err);
-    return { ok: false, message: "Error al enviar. Inténtalo de nuevo." };
+    return { ok: false, message: "Could not submit. Try again." };
   }
 }
 
@@ -204,7 +204,7 @@ export async function submitCompletion(_prev: SubmitState, formData: FormData): 
     return { ok: true, message: "Completion submitted correctly." };
   } catch (err) {
     console.error("[submitCompletion]", err);
-    return { ok: false, message: "Error al enviar completion. Inténtalo de nuevo." };
+    return { ok: false, message: "Could not submit the completion. Try again." };
   }
 }
 
@@ -260,6 +260,6 @@ export async function submitProgress(_prev: SubmitState, formData: FormData): Pr
     return { ok: true, message: "Progress submitted correctly." };
   } catch (err) {
     console.error("[submitProgress]", err);
-    return { ok: false, message: "Error al enviar progress. Inténtalo de nuevo." };
+    return { ok: false, message: "Could not submit the progress. Try again." };
   }
 }

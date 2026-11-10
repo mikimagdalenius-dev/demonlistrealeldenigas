@@ -1085,3 +1085,59 @@ a:hover {
     animation: none !important;
   }
 }
+
+/* ── Fila clicable y movimientos ────────────────────────────────────────────── */
+
+.pc-entry {
+  position: relative;
+}
+
+/* El enlace del nombre cubre toda la fila; los controles quedan por encima */
+.pc-row-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.pc-runs,
+.pc-entry a:not(.pc-row-link) {
+  position: relative;
+  z-index: 1;
+}
+
+.pc-num-wrap {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.pc-move {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  font-stretch: 125%;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pc-move.is-up {
+  color: var(--green);
+}
+
+.pc-move.is-down {
+  color: var(--ink-3);
+}
+
+.pc-entry.is-top .pc-move {
+  margin-top: 14px;
+  font-size: 16px;
+}
+
+.pc-meta-sep {
+  display: inline-block;
+  width: 1px;
+  height: 10px;
+  margin: 0 12px;
+  background: var(--rule-strong);
+}

@@ -47,10 +47,10 @@ export default async function AdminPage() {
     <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-        <h1 className="pc-demon-title">Panel de Admin</h1>
+        <h1 className="pc-demon-title">Admin panel</h1>
         <form action={logoutAction}>
           <button type="submit" className="pc-btn pc-btn-secondary pc-btn-small">
-            Cerrar sesión
+            Log out
           </button>
         </form>
       </div>
@@ -58,7 +58,7 @@ export default async function AdminPage() {
       {/* ── Demons ── */}
       <section>
         <div className="pc-section-head pc-caps">
-          Demonios ({demons.length})
+          Demons ({demons.length})
         </div>
         <DemonDragList
           initialDemons={demons.map((d) => ({
@@ -75,17 +75,17 @@ export default async function AdminPage() {
       {/* ── Completions ── */}
       <section>
         <div className="pc-section-head pc-caps">
-          Completaciones ({completions.length})
+          Completions ({completions.length})
         </div>
 
         <div className="pc-card" style={{ overflowX: "auto" }}>
           <table className="pc-table">
             <thead>
               <tr>
-                <th>Demonio</th>
-                <th>Jugador</th>
-                <th>Vídeo</th>
-                <th className="is-right" style={{ width: 100 }}>Acción</th>
+                <th>Demon</th>
+                <th>Player</th>
+                <th>Video</th>
+                <th className="is-right" style={{ width: 100 }}>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -98,16 +98,16 @@ export default async function AdminPage() {
                     <td>
                       {c.videoUrl ? (
                         <a href={safeHref(c.videoUrl)} target="_blank" rel="noreferrer">
-                          Ver vídeo
+                          Watch
                         </a>
                       ) : (
-                        <span className="is-muted">Sin vídeo</span>
+                        <span className="is-muted">No video</span>
                       )}
                     </td>
                     <td className="is-right">
                       <ConfirmDeleteBtn
                         action={deleteCompletionAction.bind(null, c.id)}
-                        confirmMsg={`¿Borrar la completación de ${c.player.name} en ${c.demon.name}?`}
+                        confirmMsg={`Delete ${c.player.name}'s completion of ${c.demon.name}?`}
                       />
                     </td>
                   </tr>
@@ -115,7 +115,7 @@ export default async function AdminPage() {
               {completions.length === 0 && (
                 <tr>
                   <td colSpan={4} className="pc-empty">
-                    No hay completaciones.
+                    No completions.
                   </td>
                 </tr>
               )}
@@ -127,17 +127,17 @@ export default async function AdminPage() {
       {/* ── Progress ── */}
       <section>
         <div className="pc-section-head pc-caps">
-          Progreso ({progresses.length})
+          Progress ({progresses.length})
         </div>
 
         <div className="pc-card" style={{ overflowX: "auto" }}>
           <table className="pc-table">
             <thead>
               <tr>
-                <th>Demonio</th>
-                <th>Jugador</th>
+                <th>Demon</th>
+                <th>Player</th>
                 <th className="is-center" style={{ width: 80 }}>%</th>
-                <th className="is-right" style={{ width: 100 }}>Acción</th>
+                <th className="is-right" style={{ width: 100 }}>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -153,7 +153,7 @@ export default async function AdminPage() {
                     <td className="is-right">
                       <ConfirmDeleteBtn
                         action={deleteProgressAction.bind(null, p.id)}
-                        confirmMsg={`¿Borrar el progreso de ${p.player.name} en ${p.demon.name}?`}
+                        confirmMsg={`Delete ${p.player.name}'s progress on ${p.demon.name}?`}
                       />
                     </td>
                   </tr>
@@ -161,7 +161,7 @@ export default async function AdminPage() {
               {progresses.length === 0 && (
                 <tr>
                   <td colSpan={4} className="pc-empty">
-                    No hay registros de progreso.
+                    No progress records.
                   </td>
                 </tr>
               )}

@@ -22,7 +22,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="pc-btn" disabled={pending}>
-      {pending ? "Guardando..." : "Guardar cambios"}
+      {pending ? "Saving..." : "Save changes"}
     </button>
   );
 }
@@ -53,9 +53,9 @@ export function EditDemonForm({
           className="pc-btn pc-btn-secondary pc-btn-small"
           onClick={() => router.push("/admin")}
         >
-          ← Volver
+          ← Back
         </button>
-        <h1 className="pc-demon-title">Editar demonio</h1>
+        <h1 className="pc-demon-title">Edit demon</h1>
       </div>
 
       <form action={action}>
@@ -63,12 +63,12 @@ export function EditDemonForm({
         <input type="hidden" name="thumbnailVideoUrl" value={selectedThumb} />
 
         <div className="mb-4">
-          <label htmlFor="name">Nombre</label>
+          <label htmlFor="name">Name</label>
           <input id="name" name="name" defaultValue={defaultName} required />
         </div>
 
         <div className="mb-4">
-          <label htmlFor="videoUrl">URL del vídeo</label>
+          <label htmlFor="videoUrl">Video URL</label>
           <input id="videoUrl" name="videoUrl" type="url" defaultValue={defaultVideoUrl} required />
         </div>
 
@@ -78,13 +78,13 @@ export function EditDemonForm({
         </div>
 
         <div className="mb-5">
-          <label htmlFor="position">Posición</label>
+          <label htmlFor="position">Position</label>
           <input id="position" name="position" type="number" min={1} defaultValue={defaultPosition} required />
         </div>
 
         {allVideos.length > 0 && (
           <div className="mb-5">
-            <label>Miniatura</label>
+            <label>Thumbnail</label>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
               {/* Opción "automática" */}
               <button

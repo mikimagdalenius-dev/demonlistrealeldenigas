@@ -15,7 +15,7 @@ export function Navbar() {
   return (
     <header className="pc-topbar">
       <div className="pc-nav-wrap">
-        <Link href="/" className="pc-logo" aria-label="Demonlist Eldenigas, inicio">
+        <Link href="/" className="pc-logo" aria-label="Demonlist Eldenigas, home">
           <span className="pc-logo-text">Demonlist Eldenigas</span>
           <span className="pc-code" aria-hidden="true">
             <i /><i /><i /><i /><i />

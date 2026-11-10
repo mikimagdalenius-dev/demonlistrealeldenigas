@@ -1,7 +1,7 @@
 // Piezas compartidas del catálogo: número de posición y lectura de puntos.
 
 export function CatNum({ n }: { n: number }) {
-  return <span className="pc-entry-num" aria-label={`Posición ${n}`}>#{String(n).padStart(2, "0")}</span>;
+  return <span className="pc-entry-num" aria-label={`Position ${n}`}>#{String(n).padStart(2, "0")}</span>;
 }
 
 /** 10 celdas; cada una vale 50 pts (500 = #1 = todas encendidas). */

@@ -125,7 +125,7 @@ Colour is a code, not a decoration. A five-block industrial strip (grey, blue, y
 - Matte black ground, bone-white ink, 1px hairline rules, zero radius, zero shadow.
 - Archivo variable with the width axis: expanded light numerals, wide tracked caps labels.
 - Position numeral is always the largest thing on an entry.
-- One job per colour: red = active/selected, yellow = progress %, blue = links/video, green = success only.
+- One job per colour: red = active/selected, yellow = progress %, blue = links/video, green = success and upward moves.
 - Decoding on hover/focus-within: greyscale to colour, ink numeral to red, 400ms ease-out.
 
 ## Colors
@@ -140,7 +140,7 @@ A near-monochrome black-and-bone palette with four signal colours rationed by ro
 - **Link Blue** (link-blue): Links and video destinations (inline anchors, proof links).
 
 ### Tertiary
-- **Success Green** (success-green): Only the success toast text and border.
+- **Success Green** (success-green): The success toast and the "+N" upward-move marker next to a list numeral (downward moves use ink-3).
 - **Code Grey** (code-grey): Only the first block of the five-block colour code.
 
 ### Neutral
@@ -248,6 +248,6 @@ Outlined, engraved, inverted on hover.
 ### Don't:
 - **Don't** round corners or add shadows; every box is square and flat.
 - **Don't** use red at rest or for anything other than state, focus, decode or destructive actions.
-- **Don't** use yellow for anything but progress percentages, blue for anything but links and video, or green for anything but success.
+- **Don't** use yellow for anything but progress percentages, blue for anything but links and video, or green for anything but success and upward moves.
 - **Don't** fill primary buttons with colour at rest; they are ink outlines that invert on hover.
 - **Don't** let a thumbnail sit in full colour at rest in a catalogue list.

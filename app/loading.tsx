@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <section className="pc-list-only" aria-busy="true" aria-label="Cargando">
+    <section className="pc-list-only" aria-busy="true" aria-label="Loading">
       {Array.from({ length: 5 }).map((_, idx) => (
         <div key={idx} className="pc-skeleton">
           <div className="pc-skeleton-block" style={{ height: 44, width: 72 }} />

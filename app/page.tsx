@@ -15,6 +15,7 @@ export default async function DemonlistPage() {
     thumbnailVideoUrl: string | null;
     publisherName: string;
     completions: { id: number; videoUrl: string; createdAt: Date; player: { name: string } }[];
+    positionHistory: { position: number; changedAt: Date }[];
   }[] = [];
   let stats = { players: 0, completions: 0 };
 
@@ -26,6 +27,12 @@ export default async function DemonlistPage() {
           completions: {
             include: { player: { select: { name: true } } },
             orderBy: { createdAt: "asc" },
+          },
+          // Los 2 últimos cambios bastan para saber si subió o bajó
+          positionHistory: {
+            select: { position: true, changedAt: true },
+            orderBy: { changedAt: "desc" },
+            take: 2,
           },
         },
       }),

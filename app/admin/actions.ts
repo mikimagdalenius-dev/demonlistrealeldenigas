@@ -23,12 +23,12 @@ export async function loginAction(
   const limit = await rateLimit("adminLogin", 5, 5 * 60 * 1000);
   if (!limit.ok) {
     return {
-      error: `Demasiados intentos. Inténtalo de nuevo en ${limit.retryInSec}s.`,
+      error: `Too many attempts. Try again in ${limit.retryInSec}s.`,
     };
   }
   const password = String(formData.get("password") ?? "");
   if (!checkAdminPassword(password)) {
-    return { error: "Contraseña incorrecta." };
+    return { error: "Wrong password." };
   }
   await setAdminCookie();
   redirect("/admin");
@@ -49,7 +49,7 @@ type AdminResult = { ok: true } | { ok: false; error: string };
 
 const UNAUTHORIZED: AdminResult = {
   ok: false,
-  error: "Sesión de admin expirada o no iniciada.",
+  error: "Admin session expired or not started.",
 };
 
 export async function deleteDemonAction(demonId: number): Promise<AdminResult> {
@@ -76,7 +76,7 @@ export async function deleteDemonAction(demonId: number): Promise<AdminResult> {
     });
   } catch (err) {
     console.error("[deleteDemonAction]", err);
-    return { ok: false, error: "Error al borrar el demonio." };
+    return { ok: false, error: "Could not delete the demon." };
   }
 
   revalidatePath("/");
@@ -123,7 +123,7 @@ export async function moveDemonAction(
     });
   } catch (err) {
     console.error("[moveDemonAction]", err);
-    return { ok: false, error: "Error al mover el demonio." };
+    return { ok: false, error: "Could not move the demon." };
   }
 
   revalidatePath("/");
@@ -134,7 +134,7 @@ export async function moveDemonAction(
 export async function reorderDemonsAction(orderedIds: number[]): Promise<AdminResult> {
   if (!(await isAdminAuthed())) return UNAUTHORIZED;
   if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
-    return { ok: false, error: "Lista de demons vacía." };
+    return { ok: false, error: "Demon list is empty." };
   }
 
   try {
@@ -170,7 +170,7 @@ export async function reorderDemonsAction(orderedIds: number[]): Promise<AdminRe
     });
   } catch (err) {
     console.error("[reorderDemonsAction]", err);
-    return { ok: false, error: "Error al reordenar los demonios." };
+    return { ok: false, error: "Could not reorder the demons." };
   }
 
   revalidatePath("/");
@@ -184,7 +184,7 @@ export async function editDemonAction(
   formData: FormData
 ): Promise<{ ok: boolean; message: string }> {
   if (!(await isAdminAuthed())) {
-    return { ok: false, message: "No autorizado." };
+    return { ok: false, message: "Not authorized." };
   }
 
   try {
@@ -199,19 +199,19 @@ export async function editDemonAction(
     try {
       videoUrl = normalizeUrl(rawVideoUrl);
     } catch {
-      return { ok: false, message: "URL de vídeo inválida." };
+      return { ok: false, message: "Invalid video URL." };
     }
 
     const thumbnailVideoUrl = tryNormalizeUrl(rawThumb);
 
     if (!name || !videoUrl || !publisherName || !Number.isInteger(newPosition) || newPosition < 1) {
-      return { ok: false, message: "Rellena todos los campos correctamente." };
+      return { ok: false, message: "Fill in all fields correctly." };
     }
     if (name.length > MAX_NAME_LEN || publisherName.length > MAX_NAME_LEN) {
-      return { ok: false, message: `Nombre demasiado largo (máx ${MAX_NAME_LEN}).` };
+      return { ok: false, message: `Name too long (max ${MAX_NAME_LEN}).` };
     }
     if (videoUrl.length > MAX_URL_LEN || (thumbnailVideoUrl && thumbnailVideoUrl.length > MAX_URL_LEN)) {
-      return { ok: false, message: `URL demasiado larga (máx ${MAX_URL_LEN}).` };
+      return { ok: false, message: `URL too long (max ${MAX_URL_LEN}).` };
     }
 
     await prisma.$transaction(async (tx) => {
@@ -219,7 +219,7 @@ export async function editDemonAction(
         where: { id: demonId },
         select: { position: true },
       });
-      if (!demon) throw new Error("Demonio no encontrado.");
+      if (!demon) throw new Error("Demon not found.");
 
       const oldPosition = demon.position;
 
@@ -266,10 +266,10 @@ export async function editDemonAction(
     revalidatePath("/admin");
     revalidatePath("/players");
 
-    return { ok: true, message: "Demonio actualizado." };
+    return { ok: true, message: "Demon updated." };
   } catch (err) {
     console.error("[editDemonAction]", err);
-    return { ok: false, message: "Error al guardar los cambios." };
+    return { ok: false, message: "Could not save the changes." };
   }
 }
 
@@ -281,7 +281,7 @@ export async function deleteCompletionAction(completionId: number): Promise<Admi
     await prisma.completion.delete({ where: { id: completionId } });
   } catch (err) {
     console.error("[deleteCompletionAction]", err);
-    return { ok: false, error: "Error al borrar la completación." };
+    return { ok: false, error: "Could not delete the completion." };
   }
   revalidatePath("/");
   revalidatePath("/admin");
@@ -297,7 +297,7 @@ export async function deleteProgressAction(progressId: number): Promise<AdminRes
     await prisma.progress.delete({ where: { id: progressId } });
   } catch (err) {
     console.error("[deleteProgressAction]", err);
-    return { ok: false, error: "Error al borrar el progreso." };
+    return { ok: false, error: "Could not delete the progress." };
   }
   revalidatePath("/admin");
   revalidatePath("/players");

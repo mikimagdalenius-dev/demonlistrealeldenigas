@@ -24,11 +24,11 @@ export default function ErrorPage({
       }}
     >
       <h2 className="pc-demon-title" style={{ marginBottom: 12 }}>
-        Algo ha ido mal.
+        Something went wrong.
       </h2>
       <p style={{ color: "var(--ink-2)", marginBottom: 24, lineHeight: 1.5 }}>
-        Hubo un error cargando esta sección. Prueba a reintentar; si persiste,
-        recarga la página.
+        This section failed to load. Try again; if it keeps happening,
+        reload the page.
       </p>
       <div
         style={{
@@ -39,10 +39,10 @@ export default function ErrorPage({
         }}
       >
         <button className="pc-btn" onClick={reset}>
-          Reintentar
+          Try again
         </button>
         <a href="/" className="pc-btn pc-btn-secondary">
-          Ir al inicio
+          Go home
         </a>
       </div>
     </div>
