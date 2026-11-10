@@ -4,6 +4,7 @@ import { pointsFromDemon } from "@/lib/points";
 import { safeHref } from "@/lib/url";
 import { youtubeEmbedUrl } from "@/lib/youtube";
 import Link from "next/link";
+import { CatNum } from "@/components/catalog";
 
 // ISR 60s. editDemon invalida "/" pero no "/demon/[id]" individual; aquí el
 // 60s actúa como ventana máxima de inconsistencia tras un edit.
@@ -48,86 +49,91 @@ export default async function DemonPage({
   const worstPos = allPositions.length > 0 ? Math.max(...allPositions) : demon.position;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      {/* Back */}
-      <div>
-        <Link href="/" className="pc-btn pc-btn-secondary" style={{ fontSize: 13, padding: "6px 12px", display: "inline-block" }}>
-          ← Volver a la lista
-        </Link>
-      </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+      <Link href="/" className="pc-back">
+        <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true">
+          <path d="M13 5H1M5 1 1 5l4 4" />
+        </svg>
+        Volver a la lista
+      </Link>
 
       {/* Header */}
-      <div className="pc-card">
-        <div style={{ padding: 20 }}>
-          <div style={{ display: "flex", gap: 20, alignItems: "flex-start", flexWrap: "wrap" }}>
-            {/* Video embed */}
-            {embedUrl && (
-              <div style={{ flexShrink: 0 }}>
-                <iframe
-                  src={embedUrl}
-                  width={320}
-                  height={180}
-                  style={{ border: "1px dashed #cbcbcb", display: "block" }}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+      <article className="pc-detail-head">
+        <div>
+          <CatNum n={demon.position} />
+          <h1 className="pc-demon-title" style={{ marginBottom: 0 }}>{demon.name}</h1>
+          <div className="pc-demon-meta">
+            published by <strong>{demon.publisherName}</strong>
+          </div>
+          <dl className="pc-facts">
+            <div>
+              <dt className="pc-caps">Points</dt>
+              <dd>{points}</dd>
+            </div>
+            <div>
+              <dt className="pc-caps">Completions</dt>
+              <dd>{demon.completions.length}</dd>
+            </div>
+            <div>
+              <dt className="pc-caps">Peak</dt>
+              <dd>#{peakPos}</dd>
+            </div>
+            {allPositions.length > 1 && worstPos !== peakPos && (
+              <div>
+                <dt className="pc-caps">Worst</dt>
+                <dd>#{worstPos}</dd>
               </div>
             )}
-            <div style={{ flex: 1, minWidth: 200 }}>
-              <div className="pc-demon-title">
-                #{demon.position} — {demon.name}
-                <span className="pc-pts-badge">{points} pts</span>
-              </div>
-              <div className="pc-demon-meta" style={{ marginTop: 8 }}>
-                published by <strong>{demon.publisherName}</strong>
-              </div>
-              <div style={{ marginTop: 12, display: "flex", gap: 16, flexWrap: "wrap", fontSize: 13, color: "#4b5563" }}>
-                <span><strong>{demon.completions.length}</strong> completions</span>
-                <span>peak position: <strong>#{peakPos}</strong></span>
-                {allPositions.length > 1 && worstPos !== peakPos && (
-                  <span>worst position: <strong>#{worstPos}</strong></span>
-                )}
-              </div>
-              {!embedUrl && demon.videoUrl && (
-                <div style={{ marginTop: 12 }}>
-                  <a href={safeHref(demon.videoUrl)} target="_blank" rel="noreferrer" className="pc-video-btn">
-                    Ver vídeo
-                  </a>
-                </div>
-              )}
+          </dl>
+          {!embedUrl && demon.videoUrl && (
+            <div style={{ marginTop: 24 }}>
+              <a href={safeHref(demon.videoUrl)} target="_blank" rel="noreferrer" className="pc-btn">
+                Ver vídeo
+              </a>
             </div>
-          </div>
+          )}
         </div>
-      </div>
+        {/* Video embed */}
+        {embedUrl && (
+          <iframe
+            src={embedUrl}
+            title={`Vídeo de ${demon.name}`}
+            className="pc-embed"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        )}
+      </article>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+      <div className="pc-two-col">
         {/* Completions */}
         <section>
-          <div style={{ fontWeight: 700, fontSize: 14, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 10, color: "#2f3440" }}>
-            Completions ({demon.completions.length})
+          <div className="pc-section-head pc-caps">
+            <span>Completions</span>
+            <span className="pc-num">{demon.completions.length}</span>
           </div>
           <div className="pc-card">
             {demon.completions.length === 0 ? (
               <div className="pc-empty">No completions yet.</div>
             ) : (
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+              <table className="pc-table">
                 <thead>
-                  <tr style={{ borderBottom: "1px dashed #d4d4d4" }}>
-                    <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 700 }}>Jugador</th>
-                    <th style={{ padding: "8px 12px", textAlign: "right", fontWeight: 700 }}>Vídeo</th>
+                  <tr>
+                    <th>Jugador</th>
+                    <th className="is-right">Vídeo</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {demon.completions.map((c, i) => (
-                    <tr key={c.id} style={{ borderBottom: i < demon.completions.length - 1 ? "1px dashed #e8e8e8" : undefined }}>
-                      <td style={{ padding: "8px 12px", fontWeight: 600 }}>{c.player.name}</td>
-                      <td style={{ padding: "8px 12px", textAlign: "right" }}>
+                  {demon.completions.map((c) => (
+                    <tr key={c.id}>
+                      <td className="is-strong">{c.player.name}</td>
+                      <td className="is-right">
                         {c.videoUrl ? (
-                          <a href={safeHref(c.videoUrl)} target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>
+                          <a href={safeHref(c.videoUrl)} target="_blank" rel="noreferrer">
                             Watch
                           </a>
                         ) : (
-                          <span style={{ color: "#9ca3af", fontSize: 13 }}>—</span>
+                          <span className="is-muted">—</span>
                         )}
                       </td>
                     </tr>
@@ -140,27 +146,26 @@ export default async function DemonPage({
 
         {/* Progress */}
         <section>
-          <div style={{ fontWeight: 700, fontSize: 14, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 10, color: "#2f3440" }}>
-            Records ({demon.progresses.length})
+          <div className="pc-section-head pc-caps">
+            <span>Records</span>
+            <span className="pc-num">{demon.progresses.length}</span>
           </div>
           <div className="pc-card">
             {demon.progresses.length === 0 ? (
               <div className="pc-empty">No records yet.</div>
             ) : (
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+              <table className="pc-table">
                 <thead>
-                  <tr style={{ borderBottom: "1px dashed #d4d4d4" }}>
-                    <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 700 }}>Jugador</th>
-                    <th style={{ padding: "8px 12px", textAlign: "right", fontWeight: 700 }}>%</th>
+                  <tr>
+                    <th>Jugador</th>
+                    <th className="is-right">%</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {demon.progresses.map((p, i) => (
-                    <tr key={p.id} style={{ borderBottom: i < demon.progresses.length - 1 ? "1px dashed #e8e8e8" : undefined }}>
-                      <td style={{ padding: "8px 12px", fontWeight: 600 }}>{p.player.name}</td>
-                      <td style={{ padding: "8px 12px", textAlign: "right", fontWeight: 700 }}>
-                        {p.percentage}%
-                      </td>
+                  {demon.progresses.map((p) => (
+                    <tr key={p.id}>
+                      <td className="is-strong">{p.player.name}</td>
+                      <td className="is-right pc-pct">{p.percentage}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -172,53 +177,31 @@ export default async function DemonPage({
 
       {/* Position History */}
       <section>
-        <div style={{ fontWeight: 700, fontSize: 14, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 10, color: "#2f3440" }}>
-          Position History
+        <div className="pc-section-head pc-caps">
+          <span>Position History</span>
         </div>
-        <div className="pc-card" style={{ padding: 16 }}>
+        <div className="pc-card">
           {history.length === 0 ? (
-            <div className="pc-empty" style={{ padding: "12px 0" }}>
-              No position changes recorded yet.
-            </div>
+            <div className="pc-empty">No position changes recorded yet.</div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-              {history.map((h, i) => {
-                const prev = history[i - 1];
-                const diff = prev ? h.position - prev.position : 0;
-                const isFirst = i === 0;
-                return (
-                  <div
-                    key={h.id}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 12,
-                      padding: "8px 0",
-                      borderBottom: i < history.length - 1 ? "1px dashed #e8e8e8" : undefined,
-                      fontSize: 14,
-                    }}
-                  >
-                    <span style={{ fontWeight: 700, minWidth: 40, color: "#1f2430" }}>
-                      #{h.position}
-                    </span>
-                    <span
-                      style={{
-                        fontWeight: 700,
-                        fontSize: 13,
-                        color: isFirst ? "#6b7280" : diff < 0 ? "#16a34a" : diff > 0 ? "#dc2626" : "#6b7280",
-                      }}
-                    >
-                      {isFirst ? "⬤ debut" : diff < 0 ? `▲ ${Math.abs(diff)}` : diff > 0 ? `▼ ${diff}` : "— sin cambio"}
-                    </span>
-                    <span style={{ color: "#9ca3af", fontSize: 12, marginLeft: "auto" }}>
-                      {new Date(h.changedAt).toLocaleDateString("es-ES", {
-                        day: "2-digit", month: "short", year: "numeric",
-                      })}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+            history.map((h, i) => {
+              const prev = history[i - 1];
+              const diff = prev ? h.position - prev.position : 0;
+              const isFirst = i === 0;
+              return (
+                <div key={h.id} className="pc-history-row">
+                  <span className="pc-history-pos">#{h.position}</span>
+                  <span className={isFirst ? "pc-flat" : diff < 0 ? "pc-up" : diff > 0 ? "pc-down" : "pc-flat"}>
+                    {isFirst ? "debut" : diff < 0 ? `sube ${Math.abs(diff)}` : diff > 0 ? `baja ${diff}` : "sin cambio"}
+                  </span>
+                  <span className="pc-caps pc-num" style={{ marginLeft: "auto" }}>
+                    {new Date(h.changedAt).toLocaleDateString("es-ES", {
+                      day: "2-digit", month: "short", year: "numeric",
+                    })}
+                  </span>
+                </div>
+              );
+            })
           )}
         </div>
       </section>

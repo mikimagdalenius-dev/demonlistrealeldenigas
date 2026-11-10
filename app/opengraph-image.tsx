@@ -7,7 +7,7 @@ export default function OgImage() {
   return new ImageResponse(
     <div
       style={{
-        background: "#1f2430",
+        background: "#0a0a0a",
         width: "100%",
         height: "100%",
         display: "flex",
@@ -22,7 +22,7 @@ export default function OgImage() {
         style={{
           fontSize: 72,
           fontWeight: 800,
-          color: "#e2e8f0",
+          color: "#ecebe6",
           letterSpacing: "-2px",
           textAlign: "center",
         }}
@@ -32,7 +32,7 @@ export default function OgImage() {
       <div
         style={{
           fontSize: 28,
-          color: "#6aadde",
+          color: "#e0352b",
           fontWeight: 600,
           letterSpacing: "2px",
           textTransform: "uppercase",
@@ -44,7 +44,7 @@ export default function OgImage() {
         style={{
           marginTop: 16,
           fontSize: 18,
-          color: "#4a5568",
+          color: "#8d8c88",
           fontWeight: 500,
         }}
       >

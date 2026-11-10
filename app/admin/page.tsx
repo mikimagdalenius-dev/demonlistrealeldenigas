@@ -47,11 +47,9 @@ export default async function AdminPage() {
     <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-        <div style={{ fontWeight: 800, fontSize: 22, color: "#1f2430" }}>
-          Panel de Admin
-        </div>
+        <h1 className="pc-demon-title">Panel de Admin</h1>
         <form action={logoutAction}>
-          <button type="submit" className="pc-btn pc-btn-secondary" style={{ fontSize: 13 }}>
+          <button type="submit" className="pc-btn pc-btn-secondary pc-btn-small">
             Cerrar sesión
           </button>
         </form>
@@ -59,7 +57,7 @@ export default async function AdminPage() {
 
       {/* ── Demons ── */}
       <section>
-        <div style={{ fontWeight: 700, fontSize: 16, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 12, color: "#2f3440" }}>
+        <div className="pc-section-head pc-caps">
           Demonios ({demons.length})
         </div>
         <DemonDragList
@@ -76,37 +74,37 @@ export default async function AdminPage() {
 
       {/* ── Completions ── */}
       <section>
-        <div style={{ fontWeight: 700, fontSize: 16, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 12, color: "#2f3440" }}>
+        <div className="pc-section-head pc-caps">
           Completaciones ({completions.length})
         </div>
 
         <div className="pc-card" style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+          <table className="pc-table">
             <thead>
-              <tr style={{ borderBottom: "1px dashed #d4d4d4", textAlign: "left" }}>
-                <th style={{ padding: "10px 12px", fontWeight: 700 }}>Demonio</th>
-                <th style={{ padding: "10px 12px", fontWeight: 700 }}>Jugador</th>
-                <th style={{ padding: "10px 12px", fontWeight: 700 }}>Vídeo</th>
-                <th style={{ padding: "10px 12px", fontWeight: 700, textAlign: "right", width: 100 }}>Acción</th>
+              <tr>
+                <th>Demonio</th>
+                <th>Jugador</th>
+                <th>Vídeo</th>
+                <th className="is-right" style={{ width: 100 }}>Acción</th>
               </tr>
             </thead>
             <tbody>
               {completions.map((c) => (
-                  <tr key={c.id} style={{ borderBottom: "1px dashed #e8e8e8" }}>
-                    <td style={{ padding: "10px 12px", fontWeight: 600 }}>
+                  <tr key={c.id}>
+                    <td className="is-strong">
                       #{c.demon.position} — {c.demon.name}
                     </td>
-                    <td style={{ padding: "10px 12px", color: "#4b5563" }}>{c.player.name}</td>
-                    <td style={{ padding: "10px 12px" }}>
+                    <td className="is-muted">{c.player.name}</td>
+                    <td>
                       {c.videoUrl ? (
-                        <a href={safeHref(c.videoUrl)} target="_blank" rel="noreferrer" style={{ fontSize: 13 }}>
+                        <a href={safeHref(c.videoUrl)} target="_blank" rel="noreferrer">
                           Ver vídeo
                         </a>
                       ) : (
-                        <span style={{ color: "#9ca3af", fontSize: 13 }}>Sin vídeo</span>
+                        <span className="is-muted">Sin vídeo</span>
                       )}
                     </td>
-                    <td style={{ padding: "10px 12px", textAlign: "right" }}>
+                    <td className="is-right">
                       <ConfirmDeleteBtn
                         action={deleteCompletionAction.bind(null, c.id)}
                         confirmMsg={`¿Borrar la completación de ${c.player.name} en ${c.demon.name}?`}
@@ -116,7 +114,7 @@ export default async function AdminPage() {
               ))}
               {completions.length === 0 && (
                 <tr>
-                  <td colSpan={4} style={{ padding: "20px 12px", color: "#6b7280", textAlign: "center" }}>
+                  <td colSpan={4} className="pc-empty">
                     No hay completaciones.
                   </td>
                 </tr>
@@ -128,31 +126,31 @@ export default async function AdminPage() {
 
       {/* ── Progress ── */}
       <section>
-        <div style={{ fontWeight: 700, fontSize: 16, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 12, color: "#2f3440" }}>
+        <div className="pc-section-head pc-caps">
           Progreso ({progresses.length})
         </div>
 
         <div className="pc-card" style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+          <table className="pc-table">
             <thead>
-              <tr style={{ borderBottom: "1px dashed #d4d4d4", textAlign: "left" }}>
-                <th style={{ padding: "10px 12px", fontWeight: 700 }}>Demonio</th>
-                <th style={{ padding: "10px 12px", fontWeight: 700 }}>Jugador</th>
-                <th style={{ padding: "10px 12px", fontWeight: 700, textAlign: "center", width: 80 }}>%</th>
-                <th style={{ padding: "10px 12px", fontWeight: 700, textAlign: "right", width: 100 }}>Acción</th>
+              <tr>
+                <th>Demonio</th>
+                <th>Jugador</th>
+                <th className="is-center" style={{ width: 80 }}>%</th>
+                <th className="is-right" style={{ width: 100 }}>Acción</th>
               </tr>
             </thead>
             <tbody>
               {progresses.map((p) => (
-                  <tr key={p.id} style={{ borderBottom: "1px dashed #e8e8e8" }}>
-                    <td style={{ padding: "10px 12px", fontWeight: 600 }}>
+                  <tr key={p.id}>
+                    <td className="is-strong">
                       #{p.demon.position} — {p.demon.name}
                     </td>
-                    <td style={{ padding: "10px 12px", color: "#4b5563" }}>{p.player.name}</td>
-                    <td style={{ padding: "10px 12px", textAlign: "center", fontWeight: 700 }}>
+                    <td className="is-muted">{p.player.name}</td>
+                    <td className="is-center pc-pct">
                       {p.percentage}%
                     </td>
-                    <td style={{ padding: "10px 12px", textAlign: "right" }}>
+                    <td className="is-right">
                       <ConfirmDeleteBtn
                         action={deleteProgressAction.bind(null, p.id)}
                         confirmMsg={`¿Borrar el progreso de ${p.player.name} en ${p.demon.name}?`}
@@ -162,7 +160,7 @@ export default async function AdminPage() {
               ))}
               {progresses.length === 0 && (
                 <tr>
-                  <td colSpan={4} style={{ padding: "20px 12px", color: "#6b7280", textAlign: "center" }}>
+                  <td colSpan={4} className="pc-empty">
                     No hay registros de progreso.
                   </td>
                 </tr>

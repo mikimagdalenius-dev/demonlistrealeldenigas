@@ -1,6 +1,14 @@
 import type { Metadata, Viewport } from "next";
+import { Archivo } from "next/font/google";
 import { Navbar } from "@/components/navbar";
 import "./globals.css";
+
+const archivo = Archivo({
+  subsets: ["latin"],
+  axes: ["wdth"],
+  variable: "--font-archivo",
+  display: "swap",
+});
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://demonlist-eldenigas.vercel.app";
@@ -34,7 +42,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1f2430",
+  themeColor: "#0a0a0a",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -46,17 +54,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();` }} />
-      </head>
+    <html lang="en" className={archivo.variable}>
       <body>
         <div className="pc-page">
           <Navbar />
           <main className="pc-shell">{children}</main>
-          <span className="fixed bottom-3 left-4 select-none pointer-events-none" style={{ color: "#b0b7c3", fontSize: 13 }}>
-            by @miki.ls
-          </span>
+          <footer className="pc-footer pc-caps">by @miki.ls</footer>
         </div>
       </body>
     </html>

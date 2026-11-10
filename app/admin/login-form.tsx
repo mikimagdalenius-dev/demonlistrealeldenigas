@@ -7,7 +7,7 @@ import { loginAction } from "./actions";
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className="pc-btn" style={{ width: "100%" }} disabled={pending}>
+    <button type="submit" className="pc-btn" style={{ width: "100%", justifyContent: "center" }} disabled={pending}>
       {pending ? "Comprobando..." : "Entrar"}
     </button>
   );
@@ -17,8 +17,8 @@ export function LoginForm() {
   const [state, action] = useActionState(loginAction, { error: "" });
 
   return (
-    <div className="pc-form" style={{ maxWidth: 340, margin: "60px auto" }}>
-      <div style={{ fontWeight: 800, fontSize: 20, marginBottom: 20, color: "#1f2430" }}>
+    <div className="pc-form" style={{ maxWidth: 380, margin: "60px auto" }}>
+      <div className="pc-caps" style={{ marginBottom: 24, color: "var(--ink)" }}>
         Admin · DEMONLIST ELDENIGAS
       </div>
 

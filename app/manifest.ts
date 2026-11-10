@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Private demonlist inspired by Pointercrate",
     start_url: "/",
     display: "standalone",
-    background_color: "#1f2430",
-    theme_color: "#1f2430",
+    background_color: "#0a0a0a",
+    theme_color: "#0a0a0a",
     icons: [
       {
         src: "/apple-icon",

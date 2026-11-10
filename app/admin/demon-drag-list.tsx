@@ -47,15 +47,15 @@ function SortableRow({
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    background: isDragging ? "var(--drag-bg, #eef1f4)" : undefined,
+    background: isDragging ? "var(--raise)" : undefined,
   };
 
   return (
-    <tr ref={setNodeRef} style={{ ...style, borderBottom: "1px dashed #e8e8e8" }}>
-      <td style={{ padding: "10px 12px", fontWeight: 700, color: "#4b5563" }}>
+    <tr ref={setNodeRef} style={style}>
+      <td className="is-muted pc-num">
         {demon.position}
       </td>
-      <td style={{ padding: "10px 0 10px 4px" }}>
+      <td style={{ paddingLeft: 0, paddingRight: 0 }}>
         {/*
           Render como <button> para que el KeyboardSensor de dnd-kit lo
           enfoque con Tab. Tras enfocarlo, Espacio activa el drag y las
@@ -67,31 +67,25 @@ function SortableRow({
           {...listeners}
           aria-label={`Reordenar ${demon.name}`}
           title="Arrastrar o pulsar Espacio + flechas para reordenar"
-          style={{
-            cursor: "grab",
-            fontSize: 16,
-            color: "#9ca3af",
-            padding: "0 8px",
-            userSelect: "none",
-            display: "inline-block",
-            background: "transparent",
-            border: "none",
-          }}
+          className="pc-drag-handle"
         >
-          ⠿
+          <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor" aria-hidden="true">
+            <circle cx="3" cy="3" r="1.5" /><circle cx="9" cy="3" r="1.5" />
+            <circle cx="3" cy="8" r="1.5" /><circle cx="9" cy="8" r="1.5" />
+            <circle cx="3" cy="13" r="1.5" /><circle cx="9" cy="13" r="1.5" />
+          </svg>
         </button>
       </td>
-      <td style={{ padding: "10px 12px", fontWeight: 600 }}>{demon.name}</td>
-      <td style={{ padding: "10px 12px", color: "#4b5563" }}>{demon.publisherName}</td>
-      <td style={{ padding: "10px 12px", textAlign: "center", color: "#4b5563" }}>
+      <td className="is-strong">{demon.name}</td>
+      <td className="is-muted">{demon.publisherName}</td>
+      <td className="is-center is-muted pc-num">
         {demon.completionCount}
       </td>
-      <td style={{ padding: "10px 12px", textAlign: "right" }}>
+      <td className="is-right">
         <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", flexWrap: "wrap" }}>
           <Link
             href={`/admin/demon/${demon.id}`}
-            className="pc-btn pc-btn-secondary"
-            style={{ padding: "5px 10px", fontSize: 13, display: "inline-block" }}
+            className="pc-btn pc-btn-secondary pc-btn-small"
           >
             Editar
           </Link>
@@ -101,15 +95,7 @@ function SortableRow({
                 onDelete(demon.id);
               }
             }}
-            style={{
-              border: "1px dashed #c0392b",
-              background: "#e74c3c",
-              color: "#fff",
-              fontWeight: 700,
-              padding: "5px 10px",
-              fontSize: 13,
-              cursor: "pointer",
-            }}
+            className="pc-btn pc-btn-danger pc-btn-small"
           >
             Borrar
           </button>
@@ -179,15 +165,15 @@ export function DemonDragList({
   return (
     <div style={{ opacity: isPending ? 0.6 : 1, transition: "opacity 0.2s" }}>
       <div className="pc-card" style={{ overflowX: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+        <table className="pc-table">
           <thead>
-            <tr style={{ borderBottom: "1px dashed #d4d4d4", textAlign: "left" }}>
-              <th style={{ padding: "10px 12px", fontWeight: 700, width: 50 }}>#</th>
+            <tr>
+              <th style={{ width: 50 }}>#</th>
               <th style={{ width: 36 }} />
-              <th style={{ padding: "10px 12px", fontWeight: 700 }}>Nombre</th>
-              <th style={{ padding: "10px 12px", fontWeight: 700 }}>Publisher</th>
-              <th style={{ padding: "10px 12px", fontWeight: 700, textAlign: "center", width: 90 }}>Completes</th>
-              <th style={{ padding: "10px 12px", fontWeight: 700, textAlign: "right", width: 180 }}>Acciones</th>
+              <th>Nombre</th>
+              <th>Publisher</th>
+              <th className="is-center" style={{ width: 90 }}>Completes</th>
+              <th className="is-right" style={{ width: 180 }}>Acciones</th>
             </tr>
           </thead>
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -203,7 +189,7 @@ export function DemonDragList({
                 ))}
                 {demons.length === 0 && (
                   <tr>
-                    <td colSpan={6} style={{ padding: "20px 12px", color: "#6b7280", textAlign: "center" }}>
+                    <td colSpan={6} className="pc-empty">
                       No hay demonios.
                     </td>
                   </tr>

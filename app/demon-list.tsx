@@ -5,6 +5,7 @@ import Link from "next/link";
 import { pointsFromDemon } from "@/lib/points";
 import { safeHref } from "@/lib/url";
 import { youtubeThumbnail } from "@/lib/youtube";
+import { CatNum, Points, Readout } from "@/components/catalog";
 
 type Demon = {
   id: number;
@@ -27,26 +28,23 @@ export function DemonList({ demons, stats }: { demons: Demon[]; stats: { demons:
 
   return (
     <>
-      <div className="pc-stats-bar">
-        <span><strong>{stats.demons}</strong> demons</span>
-        <span className="pc-stats-sep">·</span>
-        <span><strong>{stats.players}</strong> players</span>
-        <span className="pc-stats-sep">·</span>
-        <span><strong>{stats.completions}</strong> completions</span>
+      <div className="pc-stats-bar pc-caps">
+        <span><strong className="pc-num">{stats.demons}</strong>demons</span>
+        <span><strong className="pc-num">{stats.players}</strong>players</span>
+        <span><strong className="pc-num">{stats.completions}</strong>completions</span>
       </div>
 
-      <div style={{ marginBottom: 16 }}>
-        <input
-          type="search"
-          placeholder="Buscar demon..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="pc-search-input"
-        />
-      </div>
+      <input
+        type="search"
+        placeholder="Buscar demon..."
+        aria-label="Buscar demon"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        className="pc-search-input"
+      />
 
       <section className="pc-list-only">
-        {filtered.map((demon, cardIndex) => {
+        {filtered.map((demon) => {
           // Runs válidos ordenados por fecha. Si no hay ninguno, se usa el vídeo del demon
           const completionRuns = demon.completions
             .filter((run) => run.videoUrl.trim().length > 0)
@@ -57,46 +55,74 @@ export function DemonList({ demons, stats }: { demons: Demon[]; stats: { demons:
             : [{ id: -1, videoUrl: demon.videoUrl, createdAt: "", player: { name: demon.publisherName } }];
 
           const points = pointsFromDemon(demon.position);
+          const isTop = demon.position === 1 && !query.trim();
+
+          // Miniatura — clic abre el vídeo del primer run
+          const thumb = (
+            <a href={safeHref(runs[0].videoUrl)} target="_blank" rel="noreferrer" className="pc-thumb-link" tabIndex={-1}>
+              <img className="pc-thumb" src={youtubeThumbnail(demon.thumbnailVideoUrl || runs[0].videoUrl)} alt={demon.name} loading={isTop ? "eager" : "lazy"} />
+            </a>
+          );
+
+          const title = (
+            <div className="pc-demon-title">
+              <Link href={`/demon/${demon.id}`} className="pc-demon-name-link">
+                {demon.name}
+              </Link>
+            </div>
+          );
+
+          const meta = (
+            <div className="pc-demon-meta">
+              published by <strong>{demon.publisherName}</strong>
+            </div>
+          );
+
+          // Lista de vídeos de completación
+          const proofs = (
+            <details className="pc-runs">
+              <summary className="pc-video-btn">Video proofs ({runs.length})</summary>
+              <ul className="pc-runs-list">
+                {runs.map((run, runIndex) => (
+                  <li key={`${demon.id}-${run.id}-${runIndex}`} className="pc-runs-item">
+                    <span className="pc-runs-player">{run.player.name}</span>
+                    <a href={safeHref(run.videoUrl)} target="_blank" rel="noreferrer">Watch</a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          );
+
+          if (isTop) {
+            return (
+              <article key={demon.id} className="pc-entry is-top">
+                <div>
+                  <CatNum n={demon.position} />
+                  {title}
+                  {meta}
+                  <div className="pc-entry-top-meta">
+                    <Points points={points} />
+                    <Readout points={points} />
+                  </div>
+                  <div className="pc-entry-actions">{proofs}</div>
+                </div>
+                {thumb}
+              </article>
+            );
+          }
 
           return (
-            <article
-              key={demon.id}
-              className="pc-card"
-              style={{ animationDelay: `${Math.min(cardIndex * 40, 400)}ms` }}
-            >
-              <div className="pc-demon-row">
-                {/* Miniatura — clic abre el vídeo del primer run */}
-                <a href={safeHref(runs[0].videoUrl)} target="_blank" rel="noreferrer" className="pc-thumb-link">
-                  <img className="pc-thumb" src={youtubeThumbnail(demon.thumbnailVideoUrl || runs[0].videoUrl)} alt={demon.name} />
-                </a>
-
-                <div>
-                  <div className="pc-demon-title">
-                    #{demon.position} —{" "}
-                    <Link href={`/demon/${demon.id}`} style={{ color: "inherit", textDecoration: "none" }} className="pc-demon-name-link">
-                      {demon.name}
-                    </Link>
-                    <span className="pc-pts-badge">{points} pts</span>
-                  </div>
-                  <div className="pc-demon-meta">
-                    published by <strong>{demon.publisherName}</strong>
-                  </div>
-
-                  {/* Lista de vídeos de completación */}
-                  <div style={{ marginTop: 8 }}>
-                    <details className="pc-runs">
-                      <summary className="pc-video-btn">Video proofs ({runs.length})</summary>
-                      <ul className="pc-runs-list">
-                        {runs.map((run, runIndex) => (
-                          <li key={`${demon.id}-${run.id}-${runIndex}`} className="pc-runs-item">
-                            <span className="pc-runs-player">{run.player.name}</span>
-                            <a href={safeHref(run.videoUrl)} target="_blank" rel="noreferrer">Watch</a>
-                          </li>
-                        ))}
-                      </ul>
-                    </details>
-                  </div>
-                </div>
+            <article key={demon.id} className="pc-entry">
+              <CatNum n={demon.position} />
+              {thumb}
+              <div className="pc-entry-body">
+                {title}
+                {meta}
+              </div>
+              <div className="pc-entry-side">
+                <Points points={points} />
+                <Readout points={points} />
+                {proofs}
               </div>
             </article>
           );

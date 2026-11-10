@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-10T00:00:00Z",
+  "title": "Design System: Demonlist Eldenigas",
+  "extensions": {
+    "colorMeta": {
+      "ground": { "role": "neutral", "displayName": "Matte Ground", "canonical": "#0a0a0a", "tonalRamp": ["#000000", "#0a0a0a", "#101010", "#171717", "#2a2a2a", "#3a3a3a", "#5a5a5a", "#8a8a8a"] },
+      "panel": { "role": "neutral", "displayName": "Panel Black", "canonical": "#101010", "tonalRamp": ["#000000", "#0a0a0a", "#101010", "#171717", "#2a2a2a", "#3a3a3a", "#5a5a5a", "#8a8a8a"] },
+      "raise": { "role": "neutral", "displayName": "Raised Black", "canonical": "#171717", "tonalRamp": ["#000000", "#0a0a0a", "#101010", "#171717", "#2a2a2a", "#3a3a3a", "#5a5a5a", "#8a8a8a"] },
+      "ink": { "role": "neutral", "displayName": "Bone Ink", "canonical": "#ecebe6", "tonalRamp": ["#262624", "#3d3d3a", "#5c5b58", "#8d8c88", "#a9a8a3", "#c8c7c2", "#ecebe6", "#f7f6f2"] },
+      "ink-2": { "role": "neutral", "displayName": "Ink 2", "canonical": "#a9a8a3" },
+      "ink-3": { "role": "neutral", "displayName": "Ink 3", "canonical": "#8d8c88" },
+      "rule": { "role": "neutral", "displayName": "Hairline", "canonical": "rgba(236, 235, 230, 0.16)" },
+      "rule-strong": { "role": "neutral", "displayName": "Strong Hairline", "canonical": "rgba(236, 235, 230, 0.42)" },
+      "signal-red": { "role": "primary", "displayName": "Signal Red", "canonical": "#e0352b", "tonalRamp": ["#2e0907", "#55110d", "#851a14", "#b4251d", "#e0352b", "#ff6b61", "#ff9e97", "#ffd6d3"] },
+      "progress-yellow": { "role": "secondary", "displayName": "Progress Yellow", "canonical": "#e8b923", "tonalRamp": ["#2e2405", "#54420a", "#7f6410", "#b38c17", "#e8b923", "#f2cd5c", "#f8df95", "#fcf1cf"] },
+      "link-blue": { "role": "secondary", "displayName": "Link Blue", "canonical": "#5b8cff", "tonalRamp": ["#0b1633", "#14285c", "#20408f", "#335fd0", "#5b8cff", "#86aaff", "#b3c9ff", "#e0e9ff"] },
+      "success-green": { "role": "tertiary", "displayName": "Success Green", "canonical": "#4fbf6a", "tonalRamp": ["#0b2512", "#144221", "#1f6532", "#2f8f48", "#4fbf6a", "#7dd291", "#ade3b9", "#dcf3e1"] },
+      "code-grey": { "role": "tertiary", "displayName": "Code Grey", "canonical": "#7a7a7a" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display Numeral", "purpose": "The #01 featured numeral and the demon detail numeral." },
+      "headline": { "displayName": "Row Numeral", "purpose": "Position numerals for #02 onward." },
+      "title": { "displayName": "Catalogue Name", "purpose": "Demon and player names in wide caps." },
+      "body": { "displayName": "Body", "purpose": "Sentence-case reading text and meta lines." },
+      "label": { "displayName": "Engraved Caps", "purpose": "Nav, buttons, stats, section heads, form labels, table headers." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "The 400ms decode: thumbnail filter, numeral colour, readout cells, entry border." },
+      { "name": "state-fast", "value": "0.2s ease", "purpose": "Button and tab fill/colour inversions and the primary edge block fade." },
+      { "name": "reduced-motion", "value": "transition: none; animation: none", "purpose": "All motion removed under prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "stack", "value": "900px" },
+      { "name": "compact", "value": "560px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ink outline that inverts on hover; a red edge block appears on hover, focus, press and pending.",
+      "html": "<button class=\"ds-btn\">Send completion</button>",
+      "css": ".ds-btn { position: relative; display: inline-flex; align-items: center; border: 1px solid var(--ink, #ecebe6); background: transparent; color: var(--ink, #ecebe6); font-family: var(--font, Archivo, system-ui, sans-serif); font-size: 11px; font-weight: 500; letter-spacing: 0.22em; font-stretch: 125%; text-transform: uppercase; padding: 11px 36px 11px 18px; border-radius: 0; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease; } .ds-btn::after { content: \"\"; position: absolute; top: -1px; right: -1px; bottom: -1px; width: 14px; background: var(--red, #e0352b); opacity: 0; transition: opacity 0.2s ease; } .ds-btn:hover { background: var(--ink, #ecebe6); color: var(--ground, #0a0a0a); } .ds-btn:hover::after, .ds-btn:focus-visible::after, .ds-btn:active::after { opacity: 1; } .ds-btn:focus-visible { outline: 1px solid var(--red, #e0352b); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Quieter outline in strong hairline and ink-2; no edge block.",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; border: 1px solid var(--rule-strong, rgba(236,235,230,0.42)); background: transparent; color: var(--ink-2, #a9a8a3); font-family: var(--font, Archivo, system-ui, sans-serif); font-size: 11px; font-weight: 500; letter-spacing: 0.22em; font-stretch: 125%; text-transform: uppercase; padding: 11px 18px; border-radius: 0; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease; } .ds-btn-secondary:hover { background: var(--ink, #ecebe6); color: var(--ground, #0a0a0a); } .ds-btn-secondary:focus-visible { outline: 1px solid var(--red, #e0352b); outline-offset: 2px; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Admin-only destructive action: red outline, fills red on hover.",
+      "html": "<button class=\"ds-btn-danger\">Delete</button>",
+      "css": ".ds-btn-danger { display: inline-flex; border: 1px solid var(--red, #e0352b); background: transparent; color: var(--red, #e0352b); font-family: var(--font, Archivo, system-ui, sans-serif); font-size: 11px; font-weight: 500; letter-spacing: 0.22em; font-stretch: 125%; text-transform: uppercase; padding: 11px 18px; border-radius: 0; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease; } .ds-btn-danger:hover { background: var(--red, #e0352b); color: #fff; } .ds-btn-danger:focus-visible { outline: 1px solid var(--red, #e0352b); outline-offset: 2px; }"
+    },
+    {
+      "name": "Segmented Nav",
+      "kind": "nav",
+      "refersTo": "nav-tab",
+      "description": "Boxed tab group; active tab inverts to ink with a 10px red edge block.",
+      "html": "<nav class=\"ds-tabs\"><a class=\"ds-tab is-active\" href=\"#\">Main List</a><a class=\"ds-tab\" href=\"#\">Players</a><a class=\"ds-tab\" href=\"#\">Submit</a></nav>",
+      "css": ".ds-tabs { display: inline-flex; border: 1px solid var(--rule-strong, rgba(236,235,230,0.42)); background: var(--ground, #0a0a0a); } .ds-tab { position: relative; padding: 10px 22px; font-family: var(--font, Archivo, system-ui, sans-serif); font-size: 11px; font-weight: 500; letter-spacing: 0.22em; font-stretch: 125%; text-transform: uppercase; color: var(--ink-2, #a9a8a3); text-decoration: none; transition: color 0.2s ease, background-color 0.2s ease; } .ds-tab + .ds-tab { border-left: 1px solid var(--rule-strong, rgba(236,235,230,0.42)); } .ds-tab:hover { color: var(--ink, #ecebe6); background: var(--raise, #171717); } .ds-tab:focus-visible { outline: 1px solid var(--red, #e0352b); outline-offset: 2px; } .ds-tab.is-active { background: var(--ink, #ecebe6); color: var(--ground, #0a0a0a); padding-right: 34px; } .ds-tab.is-active::after { content: \"\"; position: absolute; top: 0; right: 0; bottom: 0; width: 10px; background: var(--red, #e0352b); }"
+    },
+    {
+      "name": "Form Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Square ground-filled field with strong hairline and red caret; border turns ink on focus.",
+      "html": "<label class=\"ds-label\">Player<input class=\"ds-input\" placeholder=\"Name\"></label>",
+      "css": ".ds-label { display: block; font-family: var(--font, Archivo, system-ui, sans-serif); font-size: 11px; font-weight: 500; letter-spacing: 0.2em; font-stretch: 125%; text-transform: uppercase; color: var(--ink-2, #a9a8a3); } .ds-input { display: block; margin-top: 8px; width: 100%; max-width: 560px; border: 1px solid var(--rule-strong, rgba(236,235,230,0.42)); background: var(--ground, #0a0a0a); color: var(--ink, #ecebe6); padding: 11px 14px; font-family: inherit; font-size: 15px; letter-spacing: 0; text-transform: none; border-radius: 0; caret-color: var(--red, #e0352b); } .ds-input::placeholder { color: var(--ink-3, #8d8c88); } .ds-input:focus { outline: none; border-color: var(--ink, #ecebe6); }"
+    },
+    {
+      "name": "Hairline Search",
+      "kind": "input",
+      "description": "Bottom-rule-only search field above the list.",
+      "html": "<input class=\"ds-search\" placeholder=\"Buscar demon...\">",
+      "css": ".ds-search { width: 100%; border: 0; border-bottom: 1px solid var(--rule-strong, rgba(236,235,230,0.42)); background: transparent; color: var(--ink, #ecebe6); padding: 12px 0; font-family: var(--font, Archivo, system-ui, sans-serif); font-size: 16px; caret-color: var(--red, #e0352b); } .ds-search::placeholder { color: var(--ink-3, #8d8c88); } .ds-search:focus { outline: none; border-bottom-color: var(--ink, #ecebe6); }"
+    },
+    {
+      "name": "Catalogue Entry",
+      "kind": "card",
+      "refersTo": "catalog-entry",
+      "description": "Signature row: decodes on hover/focus-within (thumbnail to colour, numeral and readout to red).",
+      "html": "<article class=\"ds-entry\" tabindex=\"0\"><div class=\"ds-num\">#02</div><div class=\"ds-thumb\"></div><div><div class=\"ds-title\">Acheron</div><div class=\"ds-meta\">published by <strong>Isma</strong></div></div><div class=\"ds-side\"><div class=\"ds-pts\">462<small>PTS</small></div><span class=\"ds-readout\"><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i></i></span></div></article>",
+      "css": ".ds-entry { display: grid; grid-template-columns: 112px 176px minmax(0,1fr) auto; gap: 24px; align-items: center; padding: 16px 20px 16px 16px; border: 1px solid var(--rule, rgba(236,235,230,0.16)); background: var(--panel, #101010); color: var(--ink, #ecebe6); font-family: var(--font, Archivo, system-ui, sans-serif); transition: border-color 0.4s cubic-bezier(0.16,1,0.3,1); } .ds-entry:hover, .ds-entry:focus-within, .ds-entry:focus-visible { border-color: var(--rule-strong, rgba(236,235,230,0.42)); outline: none; } .ds-num { font-size: 44px; font-weight: 200; font-stretch: 125%; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; transition: color 0.4s cubic-bezier(0.16,1,0.3,1); } .ds-entry:hover .ds-num, .ds-entry:focus-visible .ds-num { color: var(--red, #e0352b); } .ds-thumb { aspect-ratio: 16/9; border: 1px solid var(--rule, rgba(236,235,230,0.16)); background: linear-gradient(135deg, #5b8cff, #e8b923 55%, #e0352b); filter: grayscale(1) brightness(0.78) contrast(1.05); transition: filter 0.4s cubic-bezier(0.16,1,0.3,1); } .ds-entry:hover .ds-thumb, .ds-entry:focus-visible .ds-thumb { filter: none; } .ds-title { font-size: 20px; font-weight: 500; font-stretch: 112%; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.2; } .ds-meta { margin-top: 6px; font-size: 13px; color: var(--ink-2, #a9a8a3); } .ds-meta strong { color: var(--ink, #ecebe6); font-weight: 500; } .ds-side { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; } .ds-pts { font-size: 22px; font-weight: 300; font-stretch: 125%; font-variant-numeric: tabular-nums; line-height: 1; } .ds-pts small { margin-left: 6px; font-size: 10px; font-weight: 500; letter-spacing: 0.22em; color: var(--ink-2, #a9a8a3); } .ds-readout { display: inline-flex; gap: 3px; } .ds-readout i { display: block; width: 9px; height: 9px; background: #2a2a2a; } .ds-readout i.on { background: var(--ink-3, #8d8c88); transition: background-color 0.4s cubic-bezier(0.16,1,0.3,1); } .ds-entry:hover .ds-readout i.on, .ds-entry:focus-visible .ds-readout i.on { background: var(--red, #e0352b); } @media (prefers-reduced-motion: reduce) { .ds-entry, .ds-num, .ds-thumb, .ds-readout i { transition: none; } }"
+    },
+    {
+      "name": "Colour Code Mark",
+      "kind": "custom",
+      "description": "Wordmark over the five-block industrial colour code.",
+      "html": "<a class=\"ds-logo\" href=\"#\"><span class=\"ds-logo-text\">Demonlist Eldenigas</span><span class=\"ds-code\"><i></i><i></i><i></i><i></i><i></i></span></a>",
+      "css": ".ds-logo { display: inline-flex; flex-direction: column; gap: 8px; color: var(--ink, #ecebe6); text-decoration: none; font-family: var(--font, Archivo, system-ui, sans-serif); } .ds-logo-text { font-size: 13px; font-weight: 600; letter-spacing: 0.28em; font-stretch: 125%; text-transform: uppercase; } .ds-code { display: inline-flex; gap: 4px; } .ds-code i { display: block; width: 18px; height: 8px; } .ds-code i:nth-child(1) { background: var(--grey, #7a7a7a); } .ds-code i:nth-child(2) { background: var(--blue, #5b8cff); } .ds-code i:nth-child(3) { background: var(--yellow, #e8b923); } .ds-code i:nth-child(4) { background: var(--red, #e0352b); } .ds-code i:nth-child(5) { background: var(--ink, #ecebe6); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Catalogue Sleeve",
+    "overview": "The list is a record label's back catalogue printed on matte black. Every demon is a catalogue number, and the position numeral is the headline: an expanded, ultra-light Archivo figure that reads before anything else on the row. Everything around it is hairline: bone-white 1px rules, square boxes, no radius, no shadow. The surface feels printed and filed, not app-like.\n\nDensity is moderate and list-first. Rows are full-width hairline boxes stacked 12px apart; the #01 entry gets a featured sleeve with a 128px numeral and a large thumbnail. Labels speak in wide tracked caps, the \"engraved\" voice of the catalogue; body text stays plain sentence-case Archivo at 15px.\n\nColour is a code, not a decoration. A five-block industrial strip (grey, blue, yellow, red, white) under the wordmark is the mark, and each of those colours has one job across the whole app. The signature move is decoding: thumbnails sit monochrome and dimmed at rest, and the hovered or focused entry resolves to full colour while its numeral turns red and its ten-cell points readout lights red.",
+    "keyCharacteristics": [
+      "Matte black ground, bone-white ink, 1px hairline rules, zero radius, zero shadow.",
+      "Archivo variable with the width axis: expanded light numerals, wide tracked caps labels.",
+      "Position numeral is always the largest thing on an entry.",
+      "One job per colour: red = active/selected, yellow = progress %, blue = links/video, green = success only.",
+      "Decoding on hover/focus-within: greyscale to colour, ink numeral to red, 400ms ease-out."
+    ],
+    "rules": [
+      { "name": "The One Job Rule", "body": "Each signal colour has exactly one role. Red never marks progress, yellow never marks a link, blue never marks state. A new surface picks a role, not a colour.", "section": "colors" },
+      { "name": "The Red Is State Rule", "body": "Red appears only in response to active, selected, focused or decoding state, plus destructive admin actions. Nothing is red at rest except the active tab's edge block and the colour-code mark.", "section": "colors" },
+      { "name": "The Numeral Leads Rule", "body": "On any entry the position numeral is the largest, lightest type present. Nothing competes with it, including the name.", "section": "typography" },
+      { "name": "The Width Carries Voice Rule", "body": "Hierarchy comes from width and tracking, not weight. Caps are always expanded (125%) and tracked (0.16em to 0.28em); body text is never widened.", "section": "typography" },
+      { "name": "The Hairline Not Shadow Rule", "body": "Emphasis is a stronger 1px rule or a step from ground to panel to raise. No box-shadow, no blur, no glow.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do make the position numeral the largest, lightest type on every entry (200 weight, 125% width).",
+      "Do keep thumbnails monochrome at rest and decode them to colour with a red numeral and lit readout on hover and focus-within.",
+      "Do mark active and selected state with a solid red edge block flush to the right edge (10px tabs, 14px primary button).",
+      "Do give emphasis with the 42% hairline or a ground-to-panel-to-raise tone step.",
+      "Do set every label, button and header in expanded tracked caps (125% width, 0.16em to 0.28em).",
+      "Do limit motion to 200ms colour/fill changes and the 400ms ease-out decode, and drop all of it under reduced motion."
+    ],
+    "donts": [
+      "Don't round corners or add shadows; every box is square and flat.",
+      "Don't use red at rest or for anything other than state, focus, decode or destructive actions.",
+      "Don't use yellow for anything but progress percentages, blue for anything but links and video, or green for anything but success.",
+      "Don't fill primary buttons with colour at rest; they are ink outlines that invert on hover.",
+      "Don't let a thumbnail sit in full colour at rest in a catalogue list."
+    ]
+  }
+}

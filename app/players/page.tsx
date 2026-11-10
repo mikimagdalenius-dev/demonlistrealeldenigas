@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { pointsFromDemon } from "@/lib/points";
 import { safeHref } from "@/lib/url";
 import { extractYouTubeId } from "@/lib/youtube";
+import { CatNum, Points } from "@/components/catalog";
 
 // ISR 60s; las acciones que afectan al ranking llaman revalidatePath("/players").
 export const revalidate = 60;
@@ -80,76 +81,71 @@ export default async function PlayersPage() {
           : null;
 
         return (
-          <article key={player.id} className="pc-card">
-            <div className="pc-demon-row" style={{ gridTemplateColumns: hardestThumb ? "1fr 188px" : "1fr" }}>
-              {/* Info del jugador */}
-              <div>
-                <div className="pc-demon-title">
-                  #{index + 1} — {player.name}
-                </div>
-                <div className="pc-demon-meta">
-                  completed demons: <strong>{player.completedDemons}</strong>
-                </div>
-                <div className="pc-demon-points">total points: {player.points}</div>
+          <article key={player.id} className={`pc-entry is-player ${hardestThumb ? "" : "no-thumb"}`}>
+            <CatNum n={index + 1} />
 
-                <details className="pc-top5">
-                  <summary className="pc-top5-title">Top 5 hardest demons</summary>
-                  {player.hardestTop5.length > 0 ? (
-                    <ul className="pc-top5-list">
-                      {player.hardestTop5.map((c) => (
-                        <li key={`${player.id}-${c.demon.position}-${c.demon.name}`} className="pc-top5-item">
-                          #{c.demon.position} — {c.demon.name}
-                          <span className="pc-pts-badge">
-                            {pointsFromDemon(c.demon.position)} pts
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <div className="pc-top5-empty">No completions yet.</div>
-                  )}
-                </details>
-
-                <details className="pc-top5">
-                  <summary className="pc-top5-title">Progress on existing demons (no points)</summary>
-                  {player.progressRows.length > 0 ? (
-                    <ul className="pc-top5-list">
-                      {player.progressRows.map((row) => (
-                        <li
-                          key={`${player.id}-${row.demon.position}-${row.demon.name}-progress`}
-                          className="pc-top5-item"
-                        >
-                          #{row.demon.position} — {row.demon.name}: {row.percentage}%
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <div className="pc-top5-empty">No progress submitted yet.</div>
-                  )}
-                </details>
+            {/* Info del jugador */}
+            <div className="pc-entry-body">
+              <div className="pc-demon-title">{player.name}</div>
+              <div className="pc-demon-meta">
+                completed demons: <strong className="pc-num">{player.completedDemons}</strong>
               </div>
 
-              {/* Miniatura del hardest demon completado */}
-              {hardestThumb && player.hardest && (
-                <a
-                  href={safeHref(player.hardest.videoUrl)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="pc-thumb-link"
-                  style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}
-                >
-                  <img
-                    className="pc-thumb"
-                    src={hardestThumb}
-                    alt={player.hardest.demon.name}
-                    style={{ width: "100%", height: 106 }}
-                  />
-                  <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.4px", color: "#4b5563" }}>
-                    Hardest demon
-                  </span>
-                </a>
-              )}
+              <details className="pc-top5">
+                <summary className="pc-caps">Top 5 hardest demons</summary>
+                {player.hardestTop5.length > 0 ? (
+                  <ul className="pc-top5-list">
+                    {player.hardestTop5.map((c) => (
+                      <li key={`${player.id}-${c.demon.position}-${c.demon.name}`} className="pc-top5-item">
+                        <span className="pc-num">#{c.demon.position}</span> {c.demon.name}
+                        <span className="pc-pts-badge">
+                          {pointsFromDemon(c.demon.position)} PTS
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="pc-top5-empty">No completions yet.</div>
+                )}
+              </details>
+
+              <details className="pc-top5">
+                <summary className="pc-caps">Progress on existing demons (no points)</summary>
+                {player.progressRows.length > 0 ? (
+                  <ul className="pc-top5-list">
+                    {player.progressRows.map((row) => (
+                      <li
+                        key={`${player.id}-${row.demon.position}-${row.demon.name}-progress`}
+                        className="pc-top5-item"
+                      >
+                        <span className="pc-num">#{row.demon.position}</span> {row.demon.name}
+                        <span className="pc-pct">{row.percentage}%</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="pc-top5-empty">No progress submitted yet.</div>
+                )}
+              </details>
             </div>
+
+            <div className="pc-entry-side">
+              <span className="pc-caps">total points</span>
+              <Points points={player.points} />
+            </div>
+
+            {/* Miniatura del hardest demon completado */}
+            {hardestThumb && player.hardest && (
+              <a
+                href={safeHref(player.hardest.videoUrl)}
+                target="_blank"
+                rel="noreferrer"
+                className="pc-thumb-link"
+              >
+                <img className="pc-thumb" src={hardestThumb} alt={player.hardest.demon.name} loading="lazy" />
+                <span className="pc-caps pc-hardest-label">Hardest demon</span>
+              </a>
+            )}
           </article>
         );
       })}

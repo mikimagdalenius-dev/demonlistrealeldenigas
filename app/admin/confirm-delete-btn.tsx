@@ -31,16 +31,7 @@ export function ConfirmDeleteBtn({
     <button
       onClick={handleClick}
       disabled={isPending}
-      style={{
-        border: "1px dashed #c0392b",
-        background: isPending ? "#c0392b" : "#e74c3c",
-        color: "#fff",
-        fontWeight: 700,
-        padding: "5px 10px",
-        fontSize: 13,
-        cursor: isPending ? "not-allowed" : "pointer",
-        opacity: isPending ? 0.7 : 1,
-      }}
+      className="pc-btn pc-btn-danger pc-btn-small"
     >
       {isPending ? "..." : label}
     </button>

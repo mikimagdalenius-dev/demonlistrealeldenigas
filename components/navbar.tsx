@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ThemeToggle } from "./theme-toggle";
 
 const tabs = [
   { href: "/", label: "Main List" },
@@ -16,18 +15,23 @@ export function Navbar() {
   return (
     <header className="pc-topbar">
       <div className="pc-nav-wrap">
-        <div className="pc-nav-main">
-          <div className="pc-logo">DEMONLIST ELDENIGAS</div>
-          <div className="pc-theme-wrap">
-            <ThemeToggle />
-          </div>
-        </div>
+        <Link href="/" className="pc-logo" aria-label="Demonlist Eldenigas, inicio">
+          <span className="pc-logo-text">Demonlist Eldenigas</span>
+          <span className="pc-code" aria-hidden="true">
+            <i /><i /><i /><i /><i />
+          </span>
+        </Link>
 
         <nav className="pc-tabs" aria-label="main navigation">
           {tabs.map((tab) => {
             const active = pathname === tab.href;
             return (
-              <Link key={tab.href} href={tab.href} className={`pc-tab ${active ? "is-active" : ""}`}>
+              <Link
+                key={tab.href}
+                href={tab.href}
+                className={`pc-tab ${active ? "is-active" : ""}`}
+                aria-current={active ? "page" : undefined}
+              >
                 {tab.label}
               </Link>
             );

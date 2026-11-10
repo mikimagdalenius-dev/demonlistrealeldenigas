@@ -23,10 +23,10 @@ export default function ErrorPage({
         textAlign: "center",
       }}
     >
-      <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>
+      <h2 className="pc-demon-title" style={{ marginBottom: 12 }}>
         Algo ha ido mal.
       </h2>
-      <p style={{ color: "#4b5563", marginBottom: 20, lineHeight: 1.5 }}>
+      <p style={{ color: "var(--ink-2)", marginBottom: 24, lineHeight: 1.5 }}>
         Hubo un error cargando esta sección. Prueba a reintentar; si persiste,
         recarga la página.
       </p>
